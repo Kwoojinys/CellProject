@@ -42,6 +42,8 @@ public class UnitController : MonoBehaviour {
 
         Buy_Req_Gold.text = GameManager.Instance.ChangeValue(Info.unit_req_gold.ToString());
         LevelUp_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgold.ToString());
+        Level10Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.up10gold.ToString());
+        Level100Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.up100gold.ToString());
         Level.text = "Lv. " + Info.level.ToString();
 
         if (Info.level >= 1)
