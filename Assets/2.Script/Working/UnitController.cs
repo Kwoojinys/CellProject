@@ -10,12 +10,21 @@ public class UnitController : MonoBehaviour {
     public GameObject Buy_Btn;
     public GameObject LevelUp_Btn;
 
+    public GameObject Level10Up_Btn;
+    public GameObject Level100Up_Btn;
+
     public Text LevelUp_Req_Gold;
+    public Text Level10Up_Req_Gold;
+    public Text Level100Up_Req_Gold;
     public Text Buy_Req_Gold;
     public Text Level;
 
     float Req_Gold = 0;
     float UpGold = 0;
+    float Up10Gold = 0;
+    float Up100Gold = 0;
+
+    private bool Clicked = false;
 
     public void Set_Info(UnitControl This_Info)
     {
@@ -43,6 +52,8 @@ public class UnitController : MonoBehaviour {
 
         Req_Gold = Info.unit_req_gold;
         UpGold = Info.upgold;
+        Up10Gold = Info.up10gold;
+        Up100Gold = Info.up100gold;
         Refresh_Avaliable();
     }
 
@@ -69,12 +80,65 @@ public class UnitController : MonoBehaviour {
             LevelUp_Btn.GetComponent<Button>().enabled = true;
             LevelUp_Btn.GetComponent<Image>().color = Color.white;
         }
+
+        if (Up10Gold > GameManager.Instance.User.Have_gold)
+        {
+            Level10Up_Btn.GetComponent<Button>().enabled = false;
+            Level10Up_Btn.GetComponent<Image>().color = Color.gray;
+        }
+        else
+        {
+            Level10Up_Btn.GetComponent<Button>().enabled = true;
+            Level10Up_Btn.GetComponent<Image>().color = Color.white;
+        }
+
+        if (Up100Gold > GameManager.Instance.User.Have_gold)
+        {
+            Level100Up_Btn.GetComponent<Button>().enabled = false;
+            Level100Up_Btn.GetComponent<Image>().color = Color.gray;
+        }
+        else
+        {
+            Level100Up_Btn.GetComponent<Button>().enabled = true;
+            Level100Up_Btn.GetComponent<Image>().color = Color.white;
+        }
     }
 
     // 유닛 레벨업 버튼
-    public void Level_Up()
+    public void Level_Up(int level_tier)
     {
-        UnitDataManager.Instance.Unit_LevelUp(This_Id);
+        UnitDataManager.Instance.Unit_LevelUp(This_Id, level_tier);
+
+        if(Clicked)
+        {
+            Level100Up_Btn.SetActive(true);
+            Level10Up_Btn.SetActive(true);
+            StartCoroutine(this.Off_Additional_Btns());
+        } else
+        {
+            StartCoroutine(this.Detect_Click());
+        }
+    }
+
+    public IEnumerator Detect_Click()
+    {
+        Debug.Log("발동");
+
+        Clicked = true;
+
+        yield return new WaitForSecondsRealtime(2.0f);
+
+        Clicked = false;
+
+        StopCoroutine(this.Detect_Click());
+    }
+
+    public IEnumerator Off_Additional_Btns()
+    {
+        yield return new WaitForSecondsRealtime(4f);
+
+        Level100Up_Btn.SetActive(false);
+        Level10Up_Btn.SetActive(false);
     }
 
     public void Buy()

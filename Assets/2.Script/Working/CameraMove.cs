@@ -55,6 +55,9 @@ public class CameraMove : MonoBehaviour
         {
             if (UnitDataManager.Instance.headUnitTrans)
             {
+                if (!cam)
+                    cam = GameObject.Find("Main Camera").GetComponent<Camera>();
+
                 targetVector = cam.transform.position;
                 targetVector.x = UnitDataManager.Instance.headUnitTrans.position.x;
 

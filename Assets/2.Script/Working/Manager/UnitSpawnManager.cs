@@ -121,11 +121,10 @@ public class UnitSpawnManager : MonoBehaviour
                 Unit.transform.parent = EnemyUnits;
                 EUnitObj.Add(Unit);
                 Unit.SetActive(false);
-
             }
         }
 
-        GameManager.Instance.m_Loading = Loading_State.UI_Loading;
+        GameManager.Instance.m_Loading = Loading_State.Game_Start;
     }
 
     public void Start_Summon()

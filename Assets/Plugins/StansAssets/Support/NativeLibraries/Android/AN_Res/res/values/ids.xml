@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Google Play game services IDs.
+Save this file as res/values/games-ids.xml in your project.
+-->
+<resources>
+  <!-- app_id -->
+  <string name="app_id" translatable="false">533011431444</string>
+  <!-- package_name -->
+  <string name="package_name" translatable="false">com.woojin.ultitest</string>
+  <!-- achievement test1 -->
+  <string name="achievement_test1" translatable="false">CgkIlIDUz8EPEAIQAQ</string>
+</resources>
