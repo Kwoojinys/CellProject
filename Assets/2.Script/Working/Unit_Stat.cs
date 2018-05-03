@@ -37,6 +37,8 @@ public class Unit_Stat : MonoBehaviour {
     public float unit_req_gold = 100;
     public float base_up_gold = 100;
     public float upgold = 100;
+    public float up10gold = 100;
+    public float up100gold = 100;
     public int level = 1;
 
     // 데미지 계산
@@ -66,8 +68,10 @@ public class Unit_Stat : MonoBehaviour {
         float level_increase = Mathf.Pow(GlobalVar.level_var, (level - 1));
 
         unit_moveSpeed = _unit_moveSpeed;
-        unit_Damage *=level_increase;
+        unit_Damage *= level_increase;
         upgold = base_up_gold * level_increase;
+        up100gold = Get_LevelUp_Gold(2);
+        up10gold = Get_LevelUp_Gold(1);
 
         unit_PhysicalDef = 10;
         unit_MagicDef = 10;
@@ -108,7 +112,44 @@ public class Unit_Stat : MonoBehaviour {
         damage_up = unit_Damage * 1.2f;
         damage_down = unit_Damage * 0.8f;
         damage_Critical = unit_Damage * 0.5f;
-
     }
 
+    public float Get_LevelUp_Gold(int level_tier)
+    {
+        float Request_Gold = 0;
+        int Request_Level = 0;
+        switch (level_tier)
+        {
+            case 0:
+                {
+                    Request_Level = 1;
+                    break;
+                }
+            case 1:
+                {
+                    Request_Level = 10;
+                    break;
+                }
+            case 2:
+                {
+                    Request_Level = 100;
+                    break;
+                }
+            default:
+                {
+                    Request_Level = 1;
+                    break;
+                }
+        }
+
+        Request_Level += level;
+
+        for (int i = level; i < Request_Level; i++)
+        {
+            double level_increase2 = Mathf.Pow(GlobalVar.level_var, i-(level));
+            Request_Gold += (float)(upgold * level_increase2);
+        }
+
+        return Request_Gold;
+    }
 }

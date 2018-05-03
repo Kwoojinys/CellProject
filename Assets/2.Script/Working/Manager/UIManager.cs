@@ -42,6 +42,8 @@ public class UIManager : MonoBehaviour
 
     public GameObject[] Menu_Panels;
 
+    public Image Block_UI;
+
     public void Refresh_Gold(float gold)
     {
         Gold_Text.text = GameManager.Instance.ChangeValue(gold.ToString());
@@ -55,6 +57,11 @@ public class UIManager : MonoBehaviour
         {
             Unit_Controllers[i].Refresh_Avaliable();
         }
+    }
+
+    private void Start()
+    {
+        GameManager.Instance.m_Loading = Loading_State.UI_LoadComplete;
     }
 
     public void Init()
@@ -93,8 +100,10 @@ public class UIManager : MonoBehaviour
 
             Unit_Controllers.Add(Unit.GetComponent<UnitController>());
         }
+
         UnitsView.verticalNormalizedPosition = 1f; // 스크롤뷰 위치 초기화
-        GameManager.Instance.m_Loading = Loading_State.Game_Start;
+
+        Open_Menu(0);
     }
 
     public void Open_Menu(int id)
@@ -117,6 +126,7 @@ public class UIManager : MonoBehaviour
             case Menu_Btns.Soldier:
                 {
                     Debug.Log("Soldier Menu Open");
+                    UnitsView.verticalNormalizedPosition = 1f; // 스크롤뷰 위치 초기화
                     break;
                 }
             case Menu_Btns.Worker:

@@ -24,9 +24,6 @@ public class GameStateManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-
-    public Image Block_UI;
-
     int stage;
 
     bool isPlaying;
@@ -64,7 +61,7 @@ public class GameStateManager : MonoBehaviour
     /// <param name="Victory"></param>
     public void Game_Clear(bool Victory)
     {
-        Block_UI.GetComponent<Animation>().Play();
+        UIManager.Instance.Block_UI.GetComponent<Animation>().Play();
 
         UnitSpawnManager.Instance.Reset_All_Char();
 

@@ -99,7 +99,7 @@ public class UnitDataManager : MonoBehaviour
     public void AddUnit()
     {
         // 영웅 / 병사 테스트
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 10; i++)
         {
             UnitControl NewUnit = new UnitControl();
 
@@ -202,13 +202,44 @@ public class UnitDataManager : MonoBehaviour
     }
 
     // 유닛 레벨업 버튼으로 호출
-    public void Unit_LevelUp(int unit_id)
+    public void Unit_LevelUp(int unit_id, int level_tier)
     {
+        int Request_Level = level_tier;
+
         UnitControl Unit = playerSpawnUnitList.Find(x => x.unit_id == unit_id);
-        Unit.level += 1;
+
+
+        switch (level_tier)
+        {
+            case 0:
+                {
+                    Request_Level = 1;
+                    GameManager.Instance.User.Have_gold -= Unit.upgold;
+                    break;
+                }
+            case 1:
+                {
+                    Request_Level = 10;
+                    GameManager.Instance.User.Have_gold -= Unit.up10gold;
+                    break;
+                }
+            case 2:
+                {
+                    Request_Level = 100;
+                    GameManager.Instance.User.Have_gold -= Unit.up100gold;
+                    break;
+                }
+            default:
+                {
+                    Request_Level = 1;
+                    GameManager.Instance.User.Have_gold -= Unit.upgold;
+                    break;
+                }
+        }
+
+        Unit.level += Request_Level;
         Unit.SetData(0, 0, 0.03f, 0, Unit.level, true);
 
-        GameManager.Instance.User.Have_gold -= Unit.upgold;
         List<GameObject> PUnits = UnitSpawnManager.Instance.PUnitObj;
         for (int i = 0; i < PUnits.Count;i++)
         {
