@@ -99,7 +99,7 @@ public class UnitDataManager : MonoBehaviour
     public void AddUnit()
     {
         // 영웅 / 병사 테스트
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 1; i++)
         {
             UnitControl NewUnit = new UnitControl();
 
@@ -188,7 +188,7 @@ public class UnitDataManager : MonoBehaviour
 
 
         // 적 유닛 생성
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 5; i++)
         {
             UnitControl NewUnit = new UnitControl();
             NewUnit.unit_team = 1;

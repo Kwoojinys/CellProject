@@ -187,7 +187,7 @@ public class UnitControl : Unit_Stat
                         {
                             isIdleAnim = true;
                             // Melee Unit
-                            sAnimState.SetAnimation(0, "Idle", true);
+                            sAnimState.SetAnimation(0, "breath", true);
                         }
                     }
                     break;
@@ -264,11 +264,15 @@ public class UnitControl : Unit_Stat
 
                             targetUnitData.TakeDamage(DamageCalcul());
 
+                            Debug.Log("공격 상태, " + targetUnitData.gameObject.name);
+                            Debug.Log(sAnimState);
+
                             //if (targetUnitData.unit_HP <= 0)
                             //{
                             //    targetUnitData = null;
-                            //    unitState = eUnitState.move;
-                            //} else
+                            //    StartCoroutine("DelayAfterEnemyDeath");
+                            //}
+                            //else
                             //{
                             //    targetUnitData.TakeDamage(unit_Damage);
                             //}
@@ -284,6 +288,26 @@ public class UnitControl : Unit_Stat
         }
 
     }
+
+    bool AnimationCheck()
+    {
+
+        return true;
+    }
+
+
+    //IEnumerator DelayAfterEnemyDeath()
+    //{
+    //    unitState = eUnitState.wait;
+    //    Debug.Log("적 죽음, 1초 대기 시작");
+    //    unit_AttackColl.gameObject.SetActive(false);
+
+    //    yield return new WaitForSeconds(5.0f);
+
+    //    unitState = eUnitState.move;
+    //    Debug.Log("대기 종료");
+    //    unit_AttackColl.gameObject.SetActive(true);
+    //}
 
     public void arrowArrival()
     {
