@@ -19,6 +19,10 @@ public class UnitController : MonoBehaviour {
     public Text Buy_Req_Gold;
     public Text Level;
 
+    public Text Atk_Text;
+    public Text Def_Text;
+    public Text HP_Text;
+
     public GameObject TeamBtn;
     public GameObject ManagementBtn;
 
@@ -54,6 +58,10 @@ public class UnitController : MonoBehaviour {
             Buy_Btn.SetActive(false);
             LevelUp_Btn.SetActive(true);
         }
+
+        Atk_Text.text = GameManager.Instance.ChangeValue(Mathf.Round(Info.unit_Damage).ToString());
+        HP_Text.text = GameManager.Instance.ChangeValue(Mathf.Round(Info.unit_Max_HP).ToString());
+        Def_Text.text = GameManager.Instance.ChangeValue(Mathf.Round(Info.unit_PhysicalDef).ToString());
 
         Req_Gold = Info.unit_req_gold;
         UpGold = Info.upgolds[0];
