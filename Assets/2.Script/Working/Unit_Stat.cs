@@ -72,6 +72,8 @@ public class Unit_Stat : MonoBehaviour {
 
         unit_moveSpeed = _unit_moveSpeed;
         unit_Damage *= level_increase;
+        unit_PhysicalDef *= level_increase;
+        unit_MagicDef *= level_increase;
         upgolds[0] = Mathf.Round(base_up_gold * level_increase) ;
         upgolds[1] = Mathf.Round(Get_LevelUp_Gold(1));
         upgolds[2] = Mathf.Round(Get_LevelUp_Gold(2));
