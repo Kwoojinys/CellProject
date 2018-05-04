@@ -394,7 +394,7 @@ public class UnitControl : Unit_Stat
 
         if(this.unit_team == 1)
         {
-            GameManager.Instance.User.Have_gold += (this.level +  500100);
+            GameManager.Instance.User.Have_gold += (this.level + 100);
         }
 
         HitBox.gameObject.SetActive(false);

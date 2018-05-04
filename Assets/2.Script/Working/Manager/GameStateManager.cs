@@ -47,6 +47,9 @@ public class GameStateManager : MonoBehaviour
 
     public void Stage_Start()
     {
+        //GameManager.Instance.Current_Stage = PlayerPrefs.GetInt("CurrentStage", 1);
+        //UIManager.Instance.Stage_Text.text = GameManager.Instance.Current_Stage + " Stage";
+
         UnitSpawnManager.Instance.Start_Summon();
     }
 
@@ -69,13 +72,14 @@ public class GameStateManager : MonoBehaviour
         {
             GameManager.Instance.Current_Stage += 1;
             UIManager.Instance.Stage_Text.text = GameManager.Instance.Current_Stage + " Stage";
+            PlayerPrefs.SetInt("CurrentStage", GameManager.Instance.Current_Stage);
         }
         else
         {
-            Debug.Log("Loooooooooooooooooooooooooooooooooooose");
-        }
-        Stage_Start();
 
+        }
+
+        Stage_Start();
     }
 
     IEnumerator GameStateCorou()

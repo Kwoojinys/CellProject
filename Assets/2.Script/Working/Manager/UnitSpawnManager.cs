@@ -24,6 +24,9 @@ public class UnitSpawnManager : MonoBehaviour
     public List<GameObject> PMinionObj;
     public List<GameObject> EUnitObj;
 
+    public int Selected_Team_Number = 0;
+    public int Spawning_Team_Number = 0;
+
     private static UnitSpawnManager instance = null;
     public static UnitSpawnManager Instance
     {
@@ -129,6 +132,11 @@ public class UnitSpawnManager : MonoBehaviour
 
     public void Start_Summon()
     {
+        if(Spawning_Team_Number != Selected_Team_Number)
+        {
+            Spawning_Team_Number = Selected_Team_Number;
+        }
+
         StartCoroutine(this.Summon_PlayerUnit());
         StartCoroutine(this.Summon_EnemyUnit());
     }
@@ -148,8 +156,10 @@ public class UnitSpawnManager : MonoBehaviour
             for (int j = 0; j < PUnitObj.Count; j++)
             {
                 if (PUnitObj[j].activeSelf) continue;
-                PUnitObj[j].SetActive(true);
 
+                if (PUnitObj[j].GetComponent<UnitControl>().battle_team != Spawning_Team_Number) continue;
+
+                PUnitObj[j].SetActive(true);
                 PUnitObj[j].transform.localPosition = Spawn_Position(0);
                 PUnitObj[j].GetComponent<UnitControl>().unit_Element = Unit_List[i].unit_Element;
                 PUnitObj[j].GetComponent<UnitControl>().unit_type = Unit_List[i].unit_type;
