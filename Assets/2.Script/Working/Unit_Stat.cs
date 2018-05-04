@@ -36,10 +36,11 @@ public class Unit_Stat : MonoBehaviour {
     public float unit_attackSpeed = 1.0f;   // 공격속도
     public float unit_req_gold = 100;
     public float base_up_gold = 100;
-    public float upgold = 100;
-    public float up10gold = 100;
-    public float up100gold = 100;
+
+    public float[] upgolds;
     public int level = 1;
+
+    public int battle_team = 0; // 전투 배치 팀 번호 (1,2,3)
 
     // 데미지 계산
     public float damage_up;    // 상성 데미지
@@ -48,6 +49,8 @@ public class Unit_Stat : MonoBehaviour {
 
     public void SetData(float _unit_hp, float _unit_Damage, float _unit_moveSpeed, float _unit_attackSpeed, int _level, bool levelup)
     {
+        upgolds = new float[4];
+
         if (_unit_attackSpeed == 0)
             unit_attackSpeed = 1.0f;
 
@@ -69,9 +72,10 @@ public class Unit_Stat : MonoBehaviour {
 
         unit_moveSpeed = _unit_moveSpeed;
         unit_Damage *= level_increase;
-        upgold = base_up_gold * level_increase;
-        up100gold = Get_LevelUp_Gold(2);
-        up10gold = Get_LevelUp_Gold(1);
+        upgolds[0] = Mathf.Round(base_up_gold * level_increase) ;
+        upgolds[1] = Mathf.Round(Get_LevelUp_Gold(1));
+        upgolds[2] = Mathf.Round(Get_LevelUp_Gold(2));
+        upgolds[3] = Mathf.Round(Get_LevelUp_Gold(3));
 
         unit_PhysicalDef = 10;
         unit_MagicDef = 10;
@@ -135,6 +139,11 @@ public class Unit_Stat : MonoBehaviour {
                     Request_Level = 100;
                     break;
                 }
+            case 3:
+                {
+                    Request_Level = 1000;
+                    break;
+                }
             default:
                 {
                     Request_Level = 1;
@@ -147,7 +156,7 @@ public class Unit_Stat : MonoBehaviour {
         for (int i = level; i < Request_Level; i++)
         {
             double level_increase2 = Mathf.Pow(GlobalVar.level_var, i-(level));
-            Request_Gold += (float)(upgold * level_increase2);
+            Request_Gold += (float)(upgolds[0] * level_increase2);
         }
 
         return Request_Gold;

@@ -19,6 +19,9 @@ public class UnitController : MonoBehaviour {
     public Text Buy_Req_Gold;
     public Text Level;
 
+    public GameObject TeamBtn;
+    public GameObject ManagementBtn;
+
     float Req_Gold = 0;
     float UpGold = 0;
     float Up10Gold = 0;
@@ -41,9 +44,9 @@ public class UnitController : MonoBehaviour {
         UnitControl Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
 
         Buy_Req_Gold.text = GameManager.Instance.ChangeValue(Info.unit_req_gold.ToString());
-        LevelUp_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgold.ToString());
-        Level10Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.up10gold.ToString());
-        Level100Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.up100gold.ToString());
+        LevelUp_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgolds[0].ToString());
+        Level10Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgolds[1].ToString());
+        Level100Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgolds[2].ToString());
         Level.text = "Lv. " + Info.level.ToString();
 
         if (Info.level >= 1)
@@ -53,9 +56,9 @@ public class UnitController : MonoBehaviour {
         }
 
         Req_Gold = Info.unit_req_gold;
-        UpGold = Info.upgold;
-        Up10Gold = Info.up10gold;
-        Up100Gold = Info.up100gold;
+        UpGold = Info.upgolds[0];
+        Up10Gold = Info.upgolds[1];
+        Up100Gold = Info.upgolds[2];
         Refresh_Avaliable();
     }
 
@@ -146,6 +149,25 @@ public class UnitController : MonoBehaviour {
     public void Buy()
     {
         UnitDataManager.Instance.Unit_Buy(This_Id);
+    }
+
+    public void Change_Team()
+    {
+        UnitControl Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
+
+        UIManager.Instance.Change_EntryUnit(Info);
+    }
+
+    public void Change_TeamMode()
+    {
+        TeamBtn.SetActive(true);
+        ManagementBtn.SetActive(false);
+    }
+
+    public void Off_TeamMode()
+    {
+        TeamBtn.SetActive(false);
+        ManagementBtn.SetActive(true);
     }
 
 }

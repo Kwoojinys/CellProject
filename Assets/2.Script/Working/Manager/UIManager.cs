@@ -42,7 +42,20 @@ public class UIManager : MonoBehaviour
 
     public GameObject[] Menu_Panels;
 
+    public Transform All_LvupMenu;
+    public Transform[] All_LevelUpBtns;
+
+    public Transform EntryMenu;
+    public Transform[] EntryUnits;
+
+    public int[] TeamUnits;
+
     public Image Block_UI;
+
+    public bool Entry_ChangeMode;
+
+    public int Target_Team;
+    public int Target_EntryID;
 
     public void Refresh_Gold(float gold)
     {
@@ -57,11 +70,15 @@ public class UIManager : MonoBehaviour
         {
             Unit_Controllers[i].Refresh_Avaliable();
         }
+
+        Set_AllLvupTexts();
     }
 
     private void Start()
     {
         GameManager.Instance.m_Loading = Loading_State.UI_LoadComplete;
+
+        TeamUnits = new int[5];
     }
 
     public void Init()
@@ -137,5 +154,92 @@ public class UIManager : MonoBehaviour
                 }
 
         }
+    }
+
+    public void Switch_AllLvupMenu()
+    {
+        All_LvupMenu.gameObject.SetActive(!All_LvupMenu.gameObject.activeSelf);
+
+        Set_AllLvupTexts();
+    }
+
+    public void Switch_EntryMenu()
+    {
+        EntryMenu.gameObject.SetActive(!EntryMenu.gameObject.activeSelf);
+
+        Change_Team(0);
+
+        for (int i = 0; i < Unit_Objs.Count; i++)
+        {
+            Unit_Objs[i].GetComponent<UnitController>().Off_TeamMode();
+        }
+    }
+
+    public void Set_AllLvupTexts()
+    {
+        for (int i = 0; i < 4; i++)
+        {
+            All_LevelUpBtns[i].GetChild(1).GetComponent<Text>().text = GameManager.Instance.ChangeValue(UnitDataManager.Instance.Unit_Upgolds[i].ToString());
+
+            if(UnitDataManager.Instance.Unit_Upgolds[i] > GameManager.Instance.User.Have_gold)
+            {
+                All_LevelUpBtns[i].GetComponent<Button>().enabled = false;
+                All_LevelUpBtns[i].GetComponent<Image>().color = Color.gray;
+            } else
+            {
+                All_LevelUpBtns[i].GetComponent<Button>().enabled = true;
+                All_LevelUpBtns[i].GetComponent<Image>().color = Color.white;
+            }
+        }
+    }
+
+    public void Request_All_LevelUp(int level_tier)
+    {
+        UnitDataManager.Instance.All_LevelUp(level_tier);
+
+        Set_AllLvupTexts();
+    }
+
+    public void Change_Team(int team_number)
+    {
+        TeamUnits = UnitDataManager.Instance.TeamUnit_ids[team_number];
+
+        Target_Team = team_number;
+
+        Target_EntryID = -1;
+    }
+
+    public void OnClick_EntryUnit(int id)
+    {
+        Entry_ChangeMode = true;
+
+        for(int i = 0; i < Unit_Objs.Count;i++)
+        {
+            Unit_Objs[i].GetComponent<UnitController>().Change_TeamMode();
+        }
+
+        Target_EntryID = id;
+
+        Debug.Log(TeamUnits[id]);
+    }
+
+    public void Change_EntryUnit(UnitControl Target)
+    {
+        Target.battle_team = Target_Team;
+
+        UnitDataManager.Instance.TeamUnit_ids[Target_Team][Target_EntryID] = Target.unit_id;
+        TeamUnits[Target_EntryID] = Target.unit_id;
+
+        Debug.Log("Team " + Target_Team + "'s " + Target_EntryID + " Unit Id : " + UnitDataManager.Instance.TeamUnit_ids[Target_Team][Target_EntryID]);
+
+        for (int i = 0; i < Unit_Objs.Count; i++)
+        {
+            Unit_Objs[i].GetComponent<UnitController>().Off_TeamMode();
+        }
+    }
+
+    public void Change_BattleTeam(int teamnumber)
+    {
+        UnitSpawnManager.Instance.Selected_Team_Number = teamnumber;
     }
 }
