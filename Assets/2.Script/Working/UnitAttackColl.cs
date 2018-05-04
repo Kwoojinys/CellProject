@@ -24,6 +24,8 @@ public class UnitAttackColl : MonoBehaviour
         {
             tartgetTagStringInit();
         }
+
+        unitData.tempAttackSpeed = unitData.unit_attackSpeed;
     }
 
     public void Death()
@@ -80,7 +82,21 @@ public class UnitAttackColl : MonoBehaviour
 
         if (coll.CompareTag(targetTag))
         {
+            //if(unitData.unit_team.Equals(0))
+            //{
+            //    Debug.Log("Target Enter");
+            //}
+
             collUnit.Add(coll.gameObject);
+
+            if (unitData.unit_team.Equals(0))
+            {
+                Debug.Log("Trigger Enter");
+                for (int i = 0; i < collUnit.Count; i++)
+                {
+                    Debug.Log("collUnit[" + i + "] : " + collUnit[i]);
+                }
+            }
 
             if (HQCheck())
             {
@@ -91,12 +107,15 @@ public class UnitAttackColl : MonoBehaviour
                 unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitControl>();
             }
 
-            if (collUnit.Count.Equals(1))
-            {
-                unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitControl>();
-                unitData.tempAttackSpeed = unitData.unit_attackSpeed;
-                unitData.unitState = UnitControl.eUnitState.attack;
-            }
+            unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitControl>();
+            unitData.unitState = UnitControl.eUnitState.attack;
+
+
+            //if (collUnit.Count.Equals(1))
+            //{
+            //    unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitControl>();
+            //    unitData.unitState = UnitControl.eUnitState.attack;
+            //}
         }
     }
 
@@ -104,11 +123,23 @@ public class UnitAttackColl : MonoBehaviour
     {
         if (coll.CompareTag(targetTag))
         {
+            //if(unitData.unit_team.Equals(0))
+            //{
+            //    Debug.Log("Target Exit");
+            //}
+
             collUnit.Remove(coll.gameObject);
 
-            if(collUnit.Count.Equals(0))
+
+            if (unitData.unit_team.Equals(0))
+            {
+                Debug.Log("Trigger Exit, " + collUnit.Count);
+            }
+
+            if (collUnit.Count.Equals(0))
             {
                 unitData.unitState = UnitControl.eUnitState.move;
+                unitData.tempAttackSpeed = unitData.unit_attackSpeed;
             }
             else
             {
@@ -122,6 +153,11 @@ public class UnitAttackColl : MonoBehaviour
         }
     }
 
+    // 적 제거후 딜레이후 이동
+    IEnumerator DelayAfterEnemyDeath()
+    {
+        yield return new WaitForSeconds(1.0f);
+    }
 
 
 

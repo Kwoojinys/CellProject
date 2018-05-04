@@ -208,7 +208,8 @@ public class UnitSpawnManager : MonoBehaviour
                 EUnitObj[j].GetComponent<UnitControl>().INIT();
                 break;
             }
-            yield return new WaitForSeconds(0.3f);
+            yield return null;
+            //yield return new WaitForSeconds(0.3f);
         }
 
         yield return new WaitForSeconds(0.1f);

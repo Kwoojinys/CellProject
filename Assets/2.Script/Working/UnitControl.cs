@@ -32,6 +32,7 @@ public class UnitControl : Unit_Stat
 
     bool isMoveAnim;
     bool isIdleAnim;
+    public bool isAttackAnim;
 
     public Transform HP_Back;
     public Image HP_Bar;    // UI Image
@@ -142,6 +143,27 @@ public class UnitControl : Unit_Stat
             {
             };
         }
+        else
+        {
+            sAnimState.Event += HandleEvent;
+            sAnimState.Complete += delegate
+            {
+                Debug.Log("complete " + sAnimState.GetCurrent(0));
+            };
+
+            sAnimState.Complete += delegate
+            {
+                if(sAnimState.GetCurrent(0).Equals("attack"))
+                {
+                    Debug.Log("Attack Complete");
+                    isAttackAnim = false;
+                }
+                else if(sAnimState.GetCurrent(0).Equals("walk"))
+                {
+                    Debug.Log("walk Complete");
+                }
+            };
+        }
 
 
         unitState = eUnitState.move;
@@ -158,6 +180,7 @@ public class UnitControl : Unit_Stat
         //sAnimState.SetAnimation(0, "Idle", true);
     }
 
+
     public void INIT()
     {
         unitState = eUnitState.move;
@@ -173,6 +196,7 @@ public class UnitControl : Unit_Stat
             TakeDamage(0);
         }
     }
+
 
     IEnumerator UnitControlCorou()
     {
@@ -214,6 +238,11 @@ public class UnitControl : Unit_Stat
                     break;
                 case eUnitState.attack:
 
+                    if(!isAttackAnim)
+                    {
+                        tempAttackSpeed += Time.deltaTime;
+                    }
+
                     // 원거리 유닛 테스트
                     if (unit_type.Equals(1))
                     {
@@ -238,10 +267,12 @@ public class UnitControl : Unit_Stat
                     }
                     else
                     {
-                        tempAttackSpeed += Time.deltaTime;
-
                         if (tempAttackSpeed >= unit_attackSpeed)
                         {
+                            if(unit_team.Equals(0))
+                            {
+                                Debug.Log("Attack Corou Start");
+                            }
                             if (targetUnitData == null)
                             {
                                 unitState = eUnitState.move;
@@ -249,10 +280,10 @@ public class UnitControl : Unit_Stat
                             }
 
                             tempAttackSpeed = 0;
-
                             isMoveAnim = false;
+                            isAttackAnim = true;
 
-
+                            // 공격 애니메이션 실행
                             if (unit_team.Equals(0))
                             {
                                 sAnimState.SetAnimation(0, "attack", false);
@@ -262,10 +293,15 @@ public class UnitControl : Unit_Stat
                                 sAnimState.SetAnimation(0, "Attack", false);
                             }
 
+                            // 데미지
                             targetUnitData.TakeDamage(DamageCalcul());
 
-                            Debug.Log("공격 상태, " + targetUnitData.gameObject.name);
-                            Debug.Log(sAnimState);
+
+                            if (unit_team.Equals(0))
+                            {
+                                Debug.Log(targetUnitData.unit_HP);
+                            }
+
 
                             //if (targetUnitData.unit_HP <= 0)
                             //{
@@ -280,7 +316,7 @@ public class UnitControl : Unit_Stat
                             //Debug.Log(unit_team + " atack, enemy HP : " + targetUnitData.unit_HP);
                         }
                     }
-                    
+
                     break;
             }
 
