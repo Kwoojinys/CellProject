@@ -101,7 +101,7 @@ public class UnitDataManager : MonoBehaviour
     public void AddUnit()
     {
         // 영웅 / 병사 테스트
-        for (int i = 0; i < 1; i++)
+        for (int i = 0; i < 5; i++)
         {
             UnitControl NewUnit = new UnitControl();
 
@@ -141,7 +141,7 @@ public class UnitDataManager : MonoBehaviour
             }
 
             NewUnit.unit_id = i;
-            NewUnit.level = 50;
+            NewUnit.level = 10;
             NewUnit.SetData(3000, 100, 0.03f, 0, NewUnit.level, true);
             PlayerSpawnUnitList.Add(NewUnit);
         }

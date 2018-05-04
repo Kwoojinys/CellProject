@@ -266,7 +266,7 @@ public class UnitSpawnManager : MonoBehaviour
     }
     
     /// <summary>
-    /// 사망시 5초후 리스폰
+    /// 사망시 8초후 리스폰
     /// </summary>
     /// <param name="Target"></param>
     public void Respawn(GameObject Target)
@@ -276,7 +276,7 @@ public class UnitSpawnManager : MonoBehaviour
 
     public IEnumerator Respawning(GameObject Target)
     {
-        yield return new WaitForSeconds(5f);
+        yield return new WaitForSeconds(8f);
 
         UnitControl UnitInfo = Target.GetComponent<UnitControl>();
         Transform TargetHQ;

@@ -133,34 +133,23 @@ public class UnitControl : Unit_Stat
         {
             sAnim.state.Event += HandleEvent;
 
-            sAnim.state.Start += delegate (Spine.TrackEntry entry)
+            sAnimState.Complete += delegate
             {
-            };
-            sAnim.state.End += delegate
-            {
-            };
-            sAnim.state.Complete += delegate
-            {
+                if (sAnimState.GetCurrent(0).ToString().Equals("Attack"))
+                {
+                    isAttackAnim = false;
+                }
             };
         }
         else
         {
             sAnimState.Event += HandleEvent;
-            sAnimState.Complete += delegate
-            {
-                Debug.Log("complete " + sAnimState.GetCurrent(0));
-            };
 
             sAnimState.Complete += delegate
             {
-                if(sAnimState.GetCurrent(0).Equals("attack"))
+                if (sAnimState.GetCurrent(0).ToString().Equals("attack"))
                 {
-                    Debug.Log("Attack Complete");
                     isAttackAnim = false;
-                }
-                else if(sAnimState.GetCurrent(0).Equals("walk"))
-                {
-                    Debug.Log("walk Complete");
                 }
             };
         }
@@ -238,10 +227,12 @@ public class UnitControl : Unit_Stat
                     break;
                 case eUnitState.attack:
 
-                    if(!isAttackAnim)
-                    {
-                        tempAttackSpeed += Time.deltaTime;
-                    }
+                    //if (!isAttackAnim)
+                    //{
+                    //    tempAttackSpeed += Time.deltaTime;
+                    //}
+
+                    tempAttackSpeed += Time.deltaTime;
 
                     // 원거리 유닛 테스트
                     if (unit_type.Equals(1))
@@ -269,10 +260,6 @@ public class UnitControl : Unit_Stat
                     {
                         if (tempAttackSpeed >= unit_attackSpeed)
                         {
-                            if(unit_team.Equals(0))
-                            {
-                                Debug.Log("Attack Corou Start");
-                            }
                             if (targetUnitData == null)
                             {
                                 unitState = eUnitState.move;
@@ -297,16 +284,24 @@ public class UnitControl : Unit_Stat
                             targetUnitData.TakeDamage(DamageCalcul());
 
 
-                            if (unit_team.Equals(0))
-                            {
-                                Debug.Log(targetUnitData.unit_HP);
-                            }
+                            //if (unit_team.Equals(0))
+                            //{
+                            //    Debug.Log(targetUnitData.unit_HP);
+                            //}
 
 
                             //if (targetUnitData.unit_HP <= 0)
                             //{
-                            //    targetUnitData = null;
-                            //    StartCoroutine("DelayAfterEnemyDeath");
+                            //    if(unit_AttackColl.GetComponent<UnitAttackColl>().collUnit.Count > 0)
+                            //    {
+                            //        targetUnitData = unit_AttackColl.GetComponent<UnitAttackColl>().collUnit[0].GetComponentInParent<UnitControl>();
+                            //    }
+                            //    else
+                            //    {
+                            //        unitState = eUnitState.move;
+                            //        targetUnitData = null;
+                            //    }
+                                
                             //}
                             //else
                             //{
