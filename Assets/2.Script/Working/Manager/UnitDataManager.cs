@@ -169,7 +169,7 @@ public class UnitDataManager : MonoBehaviour
         }
 
         // 영웅 / 병사 테스트
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 5; i++)
         {
             int soldier_id = Random.Range(0, 2);
 

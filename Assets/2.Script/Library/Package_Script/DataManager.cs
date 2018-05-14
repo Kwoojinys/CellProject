@@ -130,7 +130,7 @@ public class DataManager : MonoBehaviour
                 }
             }
 
-            GameManager.Instance.m_Loading = Loading_State.UI_Loading;
+            GameManager.Instance.m_Loading = Loading_State.Sprite_Loading;
         }
         else if (query == CloudConnectorCore.QueryType.getTable)
         {

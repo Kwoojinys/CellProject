@@ -113,7 +113,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject Unit = Instantiate(UnitObj, Units) as GameObject;
             Unit.transform.localPosition = new Vector2(0, 0);
-            Units.GetComponent<RectTransform>().sizeDelta = new Vector2(704, i * 130);
+            Units.GetComponent<RectTransform>().sizeDelta = new Vector2(704, (i+1) * 130);
             Unit_Objs.Add(Unit);
 
             Unit.GetComponent<UnitController>().Set_Info(Unit_List[i]);
