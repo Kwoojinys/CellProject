@@ -15,6 +15,8 @@ public class Worker_Controller : MonoBehaviour {
     public Text Prod_Gold;
     public Text Name;
 
+    public Image Worker_Face;
+
     float Req_Gold = 0;
     float UpGold = 0;
 
@@ -36,6 +38,8 @@ public class Worker_Controller : MonoBehaviour {
         Buy_Req_Gold.text = GameManager.Instance.ChangeValue(Info.Req_gold.ToString());
         LevelUp_Req_Gold.text = GameManager.Instance.ChangeValue(Info.Upgold.ToString());
         Prod_Gold.text = GameManager.Instance.ChangeValue(Info.Base_prod_gold.ToString()) + " g/s";
+
+        Worker_Face.sprite = DataManager.Instance.GetSprite(Info.Face_sprite);
 
         if (Info.Level >= 1)
         {

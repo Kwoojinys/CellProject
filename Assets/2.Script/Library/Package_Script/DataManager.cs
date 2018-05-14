@@ -35,8 +35,6 @@ public class DataManager : MonoBehaviour
 
     public static List<string> json_Data;
 
-
-
     private void Awake()
     {
         if (instance == null)

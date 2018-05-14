@@ -13,6 +13,7 @@ public class Worker_Info {
     private float base_prod_gold; //  기본 생산 골드
     private float upgold; // 업그레이드 필요 골드
     private string name;
+    private string face_sprite; // 로비에서 표시되는 이미지
 
     public Worker_Info(int id, float level, float base_prod_gold, float req_gold, float base_upgold)
     {
@@ -32,6 +33,7 @@ public class Worker_Info {
         this.req_gold = Data["req_gold"];
         this.base_upgold = Data["base_upgold"];
         this.base_prod_gold = Data["base_prod_gold"];
+        this.Face_sprite = Data["face_sprite"];
     }
 
     public int Id
@@ -151,6 +153,19 @@ public class Worker_Info {
         set
         {
             name = value;
+        }
+    }
+
+    public string Face_sprite
+    {
+        get
+        {
+            return face_sprite;
+        }
+
+        set
+        {
+            face_sprite = value;
         }
     }
 }
