@@ -25,6 +25,8 @@ public class UnitController : MonoBehaviour
     public Text HP_Text;
     public Text Name;
 
+    public Image Unit_Face;
+
     public GameObject TeamBtn;
     public GameObject ManagementBtn;
 
@@ -65,6 +67,7 @@ public class UnitController : MonoBehaviour
         Atk_Text.text = GameManager.Instance.ChangeValue(Mathf.Round(Info.unit_Damage).ToString());
         HP_Text.text = GameManager.Instance.ChangeValue(Mathf.Round(Info.unit_Max_HP).ToString());
         Def_Text.text = GameManager.Instance.ChangeValue(Mathf.Round(Info.unit_PhysicalDef).ToString());
+        Unit_Face.sprite = DataManager.Instance.GetSprite(Info.face_sprite);
 
 
         if (Info.unit_DamageType.Equals(0))
