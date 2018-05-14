@@ -22,6 +22,7 @@ public class UnitController : MonoBehaviour {
     public Text Atk_Text;
     public Text Def_Text;
     public Text HP_Text;
+    public Text Name;
 
     public GameObject TeamBtn;
     public GameObject ManagementBtn;
@@ -33,7 +34,7 @@ public class UnitController : MonoBehaviour {
 
     private bool Clicked = false;
 
-    public void Set_Info(UnitControl This_Info)
+    public void Set_Info(Unit_Stat This_Info)
     {
         This_Id = This_Info.unit_id;
         LevelUp_Btn.SetActive(false);
@@ -45,13 +46,14 @@ public class UnitController : MonoBehaviour {
     /// </summary>
     public void Refresh_Info()
     {
-        UnitControl Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
+        Unit_Stat Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
 
         Buy_Req_Gold.text = GameManager.Instance.ChangeValue(Info.unit_req_gold.ToString());
         LevelUp_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgolds[0].ToString());
         Level10Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgolds[1].ToString());
         Level100Up_Req_Gold.text = GameManager.Instance.ChangeValue(Info.upgolds[2].ToString());
         Level.text = "Lv. " + Info.level.ToString();
+        Name.text = Info.Name;
 
         if (Info.level >= 1)
         {
@@ -161,7 +163,7 @@ public class UnitController : MonoBehaviour {
 
     public void Change_Team()
     {
-        UnitControl Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
+        Unit_Stat Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
 
         UIManager.Instance.Change_EntryUnit(Info);
     }
@@ -170,6 +172,16 @@ public class UnitController : MonoBehaviour {
     {
         TeamBtn.SetActive(true);
         ManagementBtn.SetActive(false);
+
+        if(!UnitDataManager.Instance.Check_Team(this.This_Id))
+        {
+            TeamBtn.GetComponent<Button>().enabled = false;
+            TeamBtn.GetComponent<Image>().color = Color.gray;
+        } else
+        {
+            TeamBtn.GetComponent<Button>().enabled = true;
+            TeamBtn.GetComponent<Image>().color = Color.white;
+        }
     }
 
     public void Off_TeamMode()

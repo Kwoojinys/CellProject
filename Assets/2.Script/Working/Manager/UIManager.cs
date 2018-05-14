@@ -5,8 +5,11 @@ using UnityEngine.UI;
 
 enum Menu_Btns
 {
-    Soldier = 0,
+    World_Map = 0,
     Worker = 1,
+    Soldier = 2,
+    Gene = 3,
+    Shop = 4,
 }
 
 public class UIManager : MonoBehaviour
@@ -61,7 +64,7 @@ public class UIManager : MonoBehaviour
     {
         Gold_Text.text = GameManager.Instance.ChangeValue(gold.ToString());
 
-        for(int i = 0; i < Worker_Controllers.Count;i++)
+        for (int i = 0; i < Worker_Controllers.Count; i++)
         {
             Worker_Controllers[i].Refresh_Avaliable();
         }
@@ -88,7 +91,8 @@ public class UIManager : MonoBehaviour
 
         GameObject WorkerObj = Resources.Load("Worker_Child") as GameObject;
 
-        for (int i = 0; i < Worker_List.Count; i++) {
+        for (int i = 0; i < Worker_List.Count; i++)
+        {
             GameObject Worker = Instantiate(WorkerObj, Workers) as GameObject;
             Worker.transform.localPosition = new Vector2(0, 0);
             Workers.GetComponent<RectTransform>().sizeDelta = new Vector2(704, i * 150);
@@ -102,7 +106,7 @@ public class UIManager : MonoBehaviour
 
         WorkersView.verticalNormalizedPosition = 1f; // 스크롤뷰 위치 초기화
 
-        List<UnitControl> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
+        List<Unit_Stat> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
         Unit_Controllers = new List<UnitController>();
         GameObject UnitObj = Resources.Load("Unit_Child") as GameObject;
         for (int i = 0; i < Unit_List.Count; i++)
@@ -120,16 +124,16 @@ public class UIManager : MonoBehaviour
 
         UnitsView.verticalNormalizedPosition = 1f; // 스크롤뷰 위치 초기화
 
-        Open_Menu(0);
+        Open_Menu((int)Menu_Btns.Soldier);
     }
 
     public void Open_Menu(int id)
     {
         Menu_Btns Menu = (Menu_Btns)id;
 
-        for(int i = 0; i < Menu_Panels.Length;i++)
+        for (int i = 0; i < Menu_Panels.Length; i++)
         {
-            if(i == id)
+            if (i == id)
             {
                 Menu_Panels[i].SetActive(true);
             }
@@ -139,7 +143,8 @@ public class UIManager : MonoBehaviour
             }
         }
 
-        switch(Menu) {
+        switch (Menu)
+        {
             case Menu_Btns.Soldier:
                 {
                     Debug.Log("Soldier Menu Open");
@@ -173,6 +178,7 @@ public class UIManager : MonoBehaviour
         {
             Unit_Objs[i].GetComponent<UnitController>().Off_TeamMode();
         }
+
     }
 
     public void Set_AllLvupTexts()
@@ -181,11 +187,12 @@ public class UIManager : MonoBehaviour
         {
             All_LevelUpBtns[i].GetChild(1).GetComponent<Text>().text = GameManager.Instance.ChangeValue(UnitDataManager.Instance.Unit_Upgolds[i].ToString());
 
-            if(UnitDataManager.Instance.Unit_Upgolds[i] > GameManager.Instance.User.Have_gold)
+            if (UnitDataManager.Instance.Unit_Upgolds[i] > GameManager.Instance.User.Have_gold)
             {
                 All_LevelUpBtns[i].GetComponent<Button>().enabled = false;
                 All_LevelUpBtns[i].GetComponent<Image>().color = Color.gray;
-            } else
+            }
+            else
             {
                 All_LevelUpBtns[i].GetComponent<Button>().enabled = true;
                 All_LevelUpBtns[i].GetComponent<Image>().color = Color.white;
@@ -207,13 +214,25 @@ public class UIManager : MonoBehaviour
         Target_Team = team_number;
 
         Target_EntryID = -1;
+
+
+        for (int j = 0; j < UnitDataManager.Instance.TeamUnit_ids[team_number].Length; j++)
+        {
+            if (UnitDataManager.Instance.TeamUnit_ids[team_number][j] == -1)
+            {
+                continue;
+            }
+
+            Unit_Stat Target = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == UnitDataManager.Instance.TeamUnit_ids[team_number][j]);
+            EntryUnits[j].GetChild(0).GetComponent<Image>().sprite = DataManager.Instance.GetSprite(Target.face_sprite);
+        }
     }
 
     public void OnClick_EntryUnit(int id)
     {
         Entry_ChangeMode = true;
 
-        for(int i = 0; i < Unit_Objs.Count;i++)
+        for (int i = 0; i < Unit_Objs.Count; i++)
         {
             Unit_Objs[i].GetComponent<UnitController>().Change_TeamMode();
         }
@@ -223,7 +242,7 @@ public class UIManager : MonoBehaviour
         Debug.Log(TeamUnits[id]);
     }
 
-    public void Change_EntryUnit(UnitControl Target)
+    public void Change_EntryUnit(Unit_Stat Target)
     {
         Target.battle_team = Target_Team;
 
@@ -238,8 +257,26 @@ public class UIManager : MonoBehaviour
         }
     }
 
+
+    public void AInsert_EntryUnit(Unit_Stat Target)
+    {
+        for (int i = 0; i < UnitDataManager.Instance.TeamUnit_ids.Count; i++)
+        {
+            for (int j = 0; j < UnitDataManager.Instance.TeamUnit_ids[i].Length; j++)
+            {
+                if (UnitDataManager.Instance.TeamUnit_ids[i][j] == -1)
+                {
+                    Target.battle_team = i;
+                    UnitDataManager.Instance.TeamUnit_ids[i][j] = Target.unit_id;
+                    return;
+                }
+            }
+        }
+    }
+
     public void Change_BattleTeam(int teamnumber)
     {
         UnitSpawnManager.Instance.Selected_Team_Number = teamnumber;
+        Debug.Log("Team Change : " + UnitSpawnManager.Instance.Selected_Team_Number);
     }
 }

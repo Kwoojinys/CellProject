@@ -5,13 +5,17 @@ using UnityEngine.SceneManagement;
 
 public enum Loading_State
 {
-    UI_Loading = 0,
-    UI_LoadComplete = 1,
-    Unit_Loading = 2,
-    PUnit_Create = 3,
-    EUnit_Create = 4,
-    Battle_Loading = 5,
-    Game_Start = 6,
+    Version_Check = 0,
+    Data_Loading = 1,
+    Sprite_Loading = 2,
+    UI_Loading = 3,
+    UI_LoadComplete = 4,
+    Unit_Loading = 5,
+    PUnit_Create = 6,
+    EUnit_Create = 7,
+    Worker_Loading = 8,
+    Battle_Loading = 9,
+    Game_Start = 10,
 }
 
 public class GameManager : MonoBehaviour {
@@ -20,6 +24,8 @@ public class GameManager : MonoBehaviour {
     public UserInfo User = new UserInfo();
 
     public int Current_Stage = 1;
+
+    public bool UI_Request = false;
 
     public Loading_State m_Loading = Loading_State.UI_Loading;
 
@@ -48,10 +54,28 @@ public class GameManager : MonoBehaviour {
         if (Loading_Complete) return;
 
         switch (m_Loading) {
+            case Loading_State.Version_Check:
+                {
+                    DataManager.Instance.Get_Version(true);
+                    break;
+                }
+            case Loading_State.Data_Loading:
+                {
+                    DataManager.Instance.Init();
+                    break;
+                }
+            case Loading_State.Sprite_Loading:
+                {
+                    DataManager.Instance.Load_Sprite();
+                    break;
+                }
             case Loading_State.UI_Loading:
                 {
+                    if (UI_Request) return;
+
+                    UI_Request = true;
+
                     SceneManager.LoadScene("Scene_Ui", LoadSceneMode.Additive);
-                    m_Loading = Loading_State.UI_LoadComplete;
                     break;
                 }
             case Loading_State.UI_LoadComplete:
@@ -61,8 +85,8 @@ public class GameManager : MonoBehaviour {
                 }
             case Loading_State.Unit_Loading:
                 {
-                    m_Loading = Loading_State.PUnit_Create;
                     UnitDataManager.Instance.AddUnit();
+                    m_Loading = Loading_State.PUnit_Create;
                     break;
                 }
             case Loading_State.PUnit_Create:
@@ -75,11 +99,16 @@ public class GameManager : MonoBehaviour {
                     UnitSpawnManager.Instance.Init_EnemyUnitPool();
                     break;
                 }
+            case Loading_State.Worker_Loading:
+                {
+                    WorkerManager.Instance.Init();
+                    break;
+                }
             case Loading_State.Game_Start:
                 {
+                    UIManager.Instance.Init();
                     Loading_Complete = true;
                     GameStateManager.Instance.Stage_Start();
-                    UIManager.Instance.Init();
                     Debug.Log("Game Ready!");
                     float temp = 340282300000000000000000000000000000000.0f;
                     Debug.Log(ChangeValue(temp.ToString()));

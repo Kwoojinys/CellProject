@@ -21,6 +21,7 @@ public class collTestMove : MonoBehaviour
         StartCoroutine("testCorou");
     }
 
+
     private void Update()
     {
         if (Input.GetKey(KeyCode.LeftArrow))

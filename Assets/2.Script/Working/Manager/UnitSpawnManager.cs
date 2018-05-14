@@ -24,7 +24,7 @@ public class UnitSpawnManager : MonoBehaviour
     public List<GameObject> PMinionObj;
     public List<GameObject> EUnitObj;
 
-    public int Selected_Team_Number = 0;
+    public int Selected_Team_Number = -1;
     public int Spawning_Team_Number = 0;
 
     private static UnitSpawnManager instance = null;
@@ -52,13 +52,13 @@ public class UnitSpawnManager : MonoBehaviour
     public void Init_PlayerUnitPool()
     {
         PlayerUnits = GameObject.Find("PlayerUnit").transform;
-        List<UnitControl> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
+        List<Unit_Stat> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
 
         for (int i = 0; i < Unit_List.Count; i++)
         {
             for (int j = 0; j < 1; j++)
             {
-                if(Unit_List[i].unit_type.Equals(0))
+                if (Unit_List[i].unit_type.Equals(0))
                 {
                     // Melee
                     unit_Prefab = Resources.Load("Melee_Prefab") as GameObject;
@@ -68,9 +68,14 @@ public class UnitSpawnManager : MonoBehaviour
                     // Ranged
                     unit_Prefab = Resources.Load("Ranged_Prefab") as GameObject;
                 }
-                
+
                 GameObject Unit = Instantiate(unit_Prefab);
                 Unit.transform.parent = PlayerUnits;
+                Unit.GetComponent<UnitControl>().unit_id = Unit_List[i].unit_id;
+                Unit.GetComponent<UnitControl>().soldier_id = Unit_List[i].soldier_id;
+                Unit.GetComponent<UnitControl>().battle_team = Unit_List[i].battle_team;
+                Unit.GetComponent<UnitControl>().SetData(Unit_List[j].level, false);
+                Unit.GetComponent<UnitControl>().INIT();
                 PUnitObj.Add(Unit);
                 Unit.SetActive(false);
             }
@@ -84,7 +89,7 @@ public class UnitSpawnManager : MonoBehaviour
     public void Init_PlayerMinionPool()
     {
         PlayerUnits = GameObject.Find("PlayerMinion").transform;
-        List<UnitControl> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
+        List<Unit_Stat> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
 
         for (int i = 0; i < Unit_List.Count; i++)
         {
@@ -104,7 +109,6 @@ public class UnitSpawnManager : MonoBehaviour
                 Unit.transform.parent = PlayerUnits;
                 PMinionObj.Add(Unit);
                 Unit.SetActive(false);
-
             }
         }
 
@@ -114,7 +118,7 @@ public class UnitSpawnManager : MonoBehaviour
     public void Init_EnemyUnitPool()
     {
         EnemyUnits = GameObject.Find("EnemyUnit").transform;
-        List<UnitControl> Unit_List = UnitDataManager.Instance.EnemySpawnUnitList;
+        List<Unit_Stat> Unit_List = UnitDataManager.Instance.EnemySpawnUnitList;
         for (int i = 0; i < Unit_List.Count; i++)
         {
             for (int j = 0; j < 2; j++)
@@ -127,12 +131,12 @@ public class UnitSpawnManager : MonoBehaviour
             }
         }
 
-        GameManager.Instance.m_Loading = Loading_State.Game_Start;
+        GameManager.Instance.m_Loading = Loading_State.Worker_Loading;
     }
 
     public void Start_Summon()
     {
-        if(Spawning_Team_Number != Selected_Team_Number)
+        if (Spawning_Team_Number != Selected_Team_Number)
         {
             Spawning_Team_Number = Selected_Team_Number;
         }
@@ -148,44 +152,41 @@ public class UnitSpawnManager : MonoBehaviour
 
     public IEnumerator Summon_PlayerUnit()
     {
-        List<UnitControl> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
+        List<Unit_Stat> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
 
         PlayerHQ = GameObject.Find("PlayerHQ").transform;
-        for (int i = 0; i < Unit_List.Count; i++)
+        for (int j = 0; j < PUnitObj.Count; j++)
         {
-            for (int j = 0; j < PUnitObj.Count; j++)
-            {
-                if (PUnitObj[j].activeSelf) continue;
+            if (PUnitObj[j].activeSelf) continue;
 
-                if (PUnitObj[j].GetComponent<UnitControl>().battle_team != Spawning_Team_Number) continue;
+            if (PUnitObj[j].GetComponent<UnitControl>().battle_team != Spawning_Team_Number) continue;
 
-                PUnitObj[j].SetActive(true);
-                PUnitObj[j].transform.localPosition = Spawn_Position(0);
-                PUnitObj[j].GetComponent<UnitControl>().unit_Element = Unit_List[i].unit_Element;
-                PUnitObj[j].GetComponent<UnitControl>().unit_type = Unit_List[i].unit_type;
-                PUnitObj[j].GetComponent<UnitControl>().soldier_id = Unit_List[i].soldier_id;
-                PUnitObj[j].GetComponent<UnitControl>().SetData(0, 0, 0.03f, 0, Unit_List[j].level, false);
-                PUnitObj[j].GetComponent<UnitControl>().INIT();
-                UnitDataManager.Instance.CurrSpawnedUnitTrans.Add(PUnitObj[j].gameObject.transform);
-                break;
-            }
-
-            //StartCoroutine(this.Summon_Minion(Unit_List[i].unit_id, Unit_List[i].unit_type, Unit_List[i].soldier_id, 10));
-
+            PUnitObj[j].SetActive(true);
+            Unit_Stat Stat = Unit_List.Find(x => x.unit_id == PUnitObj[j].GetComponent<UnitControl>().unit_id);
+            PUnitObj[j].transform.localPosition = Spawn_Position(0);
+            PUnitObj[j].GetComponent<UnitControl>().soldier_id = Stat.soldier_id;
+            PUnitObj[j].GetComponent<UnitControl>().Init_Stat();
+            PUnitObj[j].GetComponent<UnitControl>().SetData(Stat.level, false);
+            PUnitObj[j].GetComponent<UnitControl>().INIT();
+            UnitDataManager.Instance.CurrSpawnedUnitTrans.Add(PUnitObj[j].gameObject.transform);
             yield return new WaitForSeconds(0.8f);
+
+            continue;
         }
+
+        //StartCoroutine(this.Summon_Minion(Unit_List[i].unit_id, Unit_List[i].unit_type, Unit_List[i].soldier_id, 10));
 
         yield return new WaitForSeconds(0.1f);
 
     }
 
-    public IEnumerator Summon_Minion(int id, int unit_type, int soldier_id, int count) 
+    public IEnumerator Summon_Minion(int id, int unit_type, int soldier_id, int count)
     {
         //Debug.Log("Summon Minion " + id*10 + " PMinionObj " + PMinionObj.Count);
 
         PlayerHQ = GameObject.Find("PlayerHQ").transform;
 
-        for (int i = id*10; i < count*(id+1); i++)
+        for (int i = id * 10; i < count * (id + 1); i++)
         {
             if (PMinionObj[i].activeSelf) continue;
 
@@ -193,7 +194,7 @@ public class UnitSpawnManager : MonoBehaviour
             PMinionObj[i].transform.localPosition = Spawn_Position(0);
             PMinionObj[i].GetComponent<UnitControl>().unit_type = unit_type;
             PMinionObj[i].GetComponent<UnitControl>().soldier_id = soldier_id;
-            PMinionObj[i].GetComponent<UnitControl>().SetData(0, 0, 0.035f, 0, 1, false);
+            PMinionObj[i].GetComponent<UnitControl>().SetData(1, false);
             PMinionObj[i].GetComponent<UnitControl>().INIT();
 
             yield return new WaitForSeconds(0.05f);
@@ -202,7 +203,7 @@ public class UnitSpawnManager : MonoBehaviour
 
     public IEnumerator Summon_EnemyUnit()
     {
-        List<UnitControl> Unit_List = UnitDataManager.Instance.EnemySpawnUnitList;
+        List<Unit_Stat> Unit_List = UnitDataManager.Instance.EnemySpawnUnitList;
 
         EnemyHQ = GameObject.Find("EnemyHQ").transform;
         for (int i = 0; i < Unit_List.Count; i++)
@@ -210,14 +211,19 @@ public class UnitSpawnManager : MonoBehaviour
             for (int j = 0; j < EUnitObj.Count; j++)
             {
                 if (EUnitObj[j].activeSelf) continue;
+
+                int rand = Random.Range(1, 4);
+
                 EUnitObj[j].SetActive(true);
                 EUnitObj[j].transform.localPosition = Spawn_Position(1);
-                int rand = Random.Range(1, 4);
+                EUnitObj[j].GetComponent<UnitControl>().soldier_id = Unit_List[i].soldier_id ;
                 EUnitObj[j].GetComponent<UnitControl>().unit_Element = rand;
-                EUnitObj[j].GetComponent<UnitControl>().SetData(0, 0, 0.03f, 0, GameManager.Instance.Current_Stage, false);
+                EUnitObj[j].GetComponent<UnitControl>().unit_team = 1;
+                EUnitObj[j].GetComponent<UnitControl>().SetData(GameManager.Instance.Current_Stage, false);
                 EUnitObj[j].GetComponent<UnitControl>().INIT();
                 break;
             }
+
             yield return new WaitForSeconds(0.3f);
         }
 
@@ -263,7 +269,7 @@ public class UnitSpawnManager : MonoBehaviour
 
         StopAllCoroutines();
     }
-    
+
     /// <summary>
     /// 사망시 5초후 리스폰
     /// </summary>
@@ -283,7 +289,8 @@ public class UnitSpawnManager : MonoBehaviour
         if (UnitInfo.unit_team == 1)
         {
             TargetHQ = EnemyHQ;
-        } else
+        }
+        else
         {
             TargetHQ = PlayerHQ;
         }
@@ -301,7 +308,8 @@ public class UnitSpawnManager : MonoBehaviour
         if (team == 1)
         {
             TargetHQ = EnemyHQ;
-        } else
+        }
+        else
         {
             TargetHQ = PlayerHQ;
         }
