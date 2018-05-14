@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SimpleJSON;
 
 public class WorkerManager : MonoBehaviour
 {
@@ -35,21 +36,23 @@ public class WorkerManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    public void Start()
-    {
-        Init();
-    }
-
     public void Init()
     {
         Worker_List = new List<Worker_Info>();
 
-        for (int i = 1; i < 8; i++)
+        string Worker_Data = PlayerPrefs.GetString("Data_Worker");
+
+        var Data = JSON.Parse(Worker_Data);
+        
+        for(int i = 0; i < Data.Count ;i++)
         {
-            Worker_List.Add(new Worker_Info(i, 0, i * 50 * (i * i), i * 150 * (i * i), i * 150));
+            Worker_Info Worker = new Worker_Info(Data[i].ToString());
+            Worker_List.Add(Worker);
         }
 
         StartCoroutine(this.Income());
+
+        GameManager.Instance.m_Loading = Loading_State.Game_Start;
     }
 
 
@@ -107,7 +110,7 @@ public class WorkerManager : MonoBehaviour
     {
         while (true)
         {
-            yield return new WaitForSeconds(5f);
+            yield return new WaitForSecondsRealtime(5f);
 
             GameManager.Instance.User.Have_gold += Worker_Income;
         }

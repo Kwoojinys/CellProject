@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SimpleJSON;
 
 // 현재 스폰되있는 유닛 데이터 관리
 public class UnitDataManager : MonoBehaviour
@@ -18,7 +19,7 @@ public class UnitDataManager : MonoBehaviour
         }
     }
 
-    public List<UnitControl> PlayerSpawnUnitList
+    public List<Unit_Stat> PlayerSpawnUnitList
     {
         get
         {
@@ -31,7 +32,7 @@ public class UnitDataManager : MonoBehaviour
         }
     }
 
-    public List<UnitControl> EnemySpawnUnitList
+    public List<Unit_Stat> EnemySpawnUnitList
     {
         get
         {
@@ -50,8 +51,11 @@ public class UnitDataManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-    List<UnitControl> playerSpawnUnitList = new List<UnitControl>();
-    List<UnitControl> enemySpawnUnitList = new List<UnitControl>();
+    public List<Unit_Stat> Master_UnitData = new List<Unit_Stat>();
+    public List<Unit_Stat> Enemy_UnitData = new List<Unit_Stat>();
+
+    List<Unit_Stat> playerSpawnUnitList = new List<Unit_Stat>();
+    List<Unit_Stat> enemySpawnUnitList = new List<Unit_Stat>();
 
     public List<Transform> CurrSpawnedUnitTrans = new List<Transform>();
 
@@ -100,16 +104,83 @@ public class UnitDataManager : MonoBehaviour
 
     public void AddUnit()
     {
+        Master_UnitData = new List<Unit_Stat>();
+        Enemy_UnitData = new List<Unit_Stat>();
+
+        string Unit_DataString = PlayerPrefs.GetString("Data_Soldier");
+
+        var Data = JSON.Parse(Unit_DataString);
+
+        for (int i = 0; i < Data.Count; i++)
+        {
+            Unit_Stat Unit = new Unit_Stat();
+            Unit.soldier_id = Data[i]["id"].AsInt;
+            Unit.Name = Data[i]["name"];
+            Unit.unit_type = Data[i]["type"];
+            Unit.unit_HP = Data[i]["hp"];
+            Unit.unit_Damage = Data[i]["b_atk"].AsInt;
+            Unit.unit_PhysicalDef = Data[i]["p_def"].AsInt;
+            Unit.unit_MagicDef = Data[i]["m_def"].AsInt;
+            Unit.unit_DamageType = Data[i]["damagetype"].AsInt;
+            Unit.base_up_gold = Data[i]["base_up_gold"].AsInt;
+            Unit.unit_moveSpeed = Data[i]["movespeed"].AsFloat * 0.01f;
+            Unit.unit_CriticalDamage = Data[i]["criticaldamage"].AsInt;
+            Unit.unit_CriticalRate = Data[i]["critical_rate"].AsInt;
+            Unit.unit_Element = Data[i]["element"].AsInt;
+            Unit.base_up_gold = Data[i]["base_up_gold"].AsInt;
+            Unit.tier = Data[i]["tier"].AsInt;
+            Unit.face_sprite = Data[i]["face_sprite"];
+            Unit.unit_team = 0;
+
+            Master_UnitData.Add(Unit);
+        }
+
+        string Enemy_DataString = PlayerPrefs.GetString("Data_Enemy");
+        var EnenmyData = JSON.Parse(Enemy_DataString);
+
+        for (int i = 0; i < EnenmyData.Count; i++)
+        {
+            Unit_Stat Unit = new Unit_Stat();
+            Unit.soldier_id = EnenmyData[i]["id"].AsInt;
+            Unit.Name = EnenmyData[i]["name"];
+            Unit.unit_type = EnenmyData[i]["type"];
+            Unit.unit_HP = EnenmyData[i]["hp"];
+            Unit.unit_Damage = EnenmyData[i]["b_atk"].AsInt;
+            Unit.unit_PhysicalDef = EnenmyData[i]["p_def"].AsInt;
+            Unit.unit_MagicDef = EnenmyData[i]["m_def"].AsInt;
+            Unit.unit_DamageType = EnenmyData[i]["damagetype"].AsInt;
+            Unit.base_up_gold = EnenmyData[i]["base_up_gold"].AsInt;
+            Unit.unit_moveSpeed = EnenmyData[i]["movespeed"].AsFloat * 0.01f;
+            Unit.unit_CriticalDamage = EnenmyData[i]["criticaldamage"].AsInt;
+            Unit.unit_CriticalRate = EnenmyData[i]["critical_rate"].AsInt;
+            Unit.unit_Element = EnenmyData[i]["element"].AsInt;
+            Unit.base_up_gold = EnenmyData[i]["base_up_gold"].AsInt;
+            Unit.tier = EnenmyData[i]["tier"].AsInt;
+            Unit.unit_team = 1;
+
+            Enemy_UnitData.Add(Unit);
+        }
+
+        TeamUnit_ids = new List<int[]>();
+
+        for (int i = 0; i < 3; i++)
+        {
+            TeamUnit_ids.Add(new int[5] { -1, -1, -1, -1, -1 });
+        }
+
         // 영웅 / 병사 테스트
         for (int i = 0; i < 1; i++)
         {
-            UnitControl NewUnit = new UnitControl();
+            int soldier_id = Random.Range(0, 2);
+
+            Unit_Stat NewUnit = Master_UnitData[soldier_id].Clone();
 
             ////// 기본
             ////NewUnit.unit_type = 0;
             ////NewUnit.soldier_id = 0;
 
             // 종류 구분 테스트
+            /*
             if (i.Equals(0))
             {
                 NewUnit.unit_type = 0;
@@ -142,11 +213,13 @@ public class UnitDataManager : MonoBehaviour
                 NewUnit.soldier_id = 1;
                 NewUnit.unit_DamageType = 1;
             }
-
+            */
             NewUnit.unit_id = i;
-            NewUnit.level = 100;
-            NewUnit.SetData(3000, 100, 0.03f, 0, NewUnit.level, true);
+            NewUnit.unit_team = 0;
+            NewUnit.level = 10;
+            NewUnit.SetData(NewUnit.level, true);
             PlayerSpawnUnitList.Add(NewUnit);
+            UIManager.Instance.AInsert_EntryUnit(NewUnit);
         }
 
         ////for (int i = 0; i < 20; i++)
@@ -192,18 +265,11 @@ public class UnitDataManager : MonoBehaviour
 
 
         // 적 유닛 생성
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
-            UnitControl NewUnit = new UnitControl();
+            Unit_Stat NewUnit = Enemy_UnitData[0].Clone();
             NewUnit.unit_team = 1;
             EnemySpawnUnitList.Add(NewUnit);
-        }
-
-        TeamUnit_ids = new List<int[]>();
-
-        for (int i = 0; i < 3; i++)
-        {
-            TeamUnit_ids.Add(new int[5]);
         }
 
         Set_AllUnitLevelUpGold();
@@ -239,7 +305,7 @@ public class UnitDataManager : MonoBehaviour
     {
         int Request_Level = level_tier;
 
-        UnitControl Unit = playerSpawnUnitList.Find(x => x.unit_id == unit_id);
+        Unit_Stat Unit = playerSpawnUnitList.Find(x => x.unit_id == unit_id);
 
         switch (level_tier)
         {
@@ -270,12 +336,13 @@ public class UnitDataManager : MonoBehaviour
         }
 
         Unit.level += Request_Level;
-        Unit.SetData(0, 0, 0.03f, 0, Unit.level, true);
+        Unit.SetData(Unit.level, true);
 
         List<GameObject> PUnits = UnitSpawnManager.Instance.PUnitObj;
         for (int i = 0; i < PUnits.Count; i++)
         {
-            PUnits[i].GetComponent<UnitControl>().SetData(0, 0, 0.03f, 0, Unit.level, true);
+            if (PUnits[i].GetComponent<UnitControl>().unit_id == unit_id)
+                PUnits[i].GetComponent<UnitControl>().SetData(Unit.level, true);
         }
 
         UnitController This_Controller = UIManager.Instance.Unit_Controllers.Find(x => x.This_Id == unit_id);
@@ -317,14 +384,14 @@ public class UnitDataManager : MonoBehaviour
 
         for (int i = 0; i < playerSpawnUnitList.Count; i++)
         {
-            UnitControl Unit = playerSpawnUnitList[i];
+            Unit_Stat Unit = playerSpawnUnitList[i];
             Unit.level += Request_Level;
-            Unit.SetData(0, 0, 0.03f, 0, Unit.level, true);
+            Unit.SetData(Unit.level, true);
 
             List<GameObject> PUnits = UnitSpawnManager.Instance.PUnitObj;
             for (int j = 0; j < PUnits.Count; j++)
             {
-                PUnits[j].GetComponent<UnitControl>().SetData(0, 0, 0.03f, 0, Unit.level, true);
+                PUnits[j].GetComponent<UnitControl>().SetData(Unit.level, true);
             }
 
             UnitController This_Controller = UIManager.Instance.Unit_Controllers.Find(x => x.This_Id == Unit.unit_id);
@@ -340,17 +407,29 @@ public class UnitDataManager : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// 편성 가능하면 true
+    /// </summary>
+    ///<param name = "id" > unit id</param>
+    /// <returns></returns>
     public bool Check_Team(int id)
     {
         int Target_Team = UIManager.Instance.Target_Team;
 
+<<<<<<< .mine
         for (int i = 0; i < TeamUnit_ids[Target_Team].Length; i++)
+=======
+        for (int j = 0; j < TeamUnit_ids.Count; j++)
+>>>>>>> .theirs
         {
-            if (TeamUnit_ids[Target_Team][i] == id)
-                return false;
+            for (int i = 0; i < TeamUnit_ids[j].Length; i++)
+            {
+                if (TeamUnit_ids[j][i] == id)
+                    return false;
+            }
         }
-
 
         return true;
     }
 }
+

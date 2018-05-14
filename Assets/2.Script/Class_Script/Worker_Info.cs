@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using SimpleJSON;
 
 public class Worker_Info
 {
@@ -12,6 +13,7 @@ public class Worker_Info
     private float base_upgold; // 업그레이드시 기본 필요 골드
     private float base_prod_gold; //  기본 생산 골드
     private float upgold; // 업그레이드 필요 골드
+    private string name;
 
     public Worker_Info(int id, float level, float base_prod_gold, float req_gold, float base_upgold)
     {
@@ -20,6 +22,17 @@ public class Worker_Info
         this.base_prod_gold = base_prod_gold;
         this.req_gold = req_gold;
         this.base_upgold = base_upgold;
+    }
+
+    public Worker_Info(string json)
+    {
+        var Data = JSON.Parse(json);
+
+        this.id = Data["id"];
+        this.name = Data["name"];
+        this.req_gold = Data["req_gold"];
+        this.base_upgold = Data["base_upgold"];
+        this.base_prod_gold = Data["base_prod_gold"];
     }
 
     public int Id
@@ -126,6 +139,19 @@ public class Worker_Info
         set
         {
             upgold = value;
+        }
+    }
+
+    public string Name
+    {
+        get
+        {
+            return name;
+        }
+
+        set
+        {
+            name = value;
         }
     }
 }

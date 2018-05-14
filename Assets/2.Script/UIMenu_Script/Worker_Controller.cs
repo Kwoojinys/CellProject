@@ -14,6 +14,7 @@ public class Worker_Controller : MonoBehaviour
     public Text LevelUp_Req_Gold;
     public Text Buy_Req_Gold;
     public Text Prod_Gold;
+    public Text Name;
 
     float Req_Gold = 0;
     float UpGold = 0;
@@ -22,6 +23,7 @@ public class Worker_Controller : MonoBehaviour
     {
         This_Id = This_Info.Id;
         LevelUp_Btn.SetActive(false);
+        Name.text = This_Info.Name;
     }
 
     /// <summary>
@@ -40,7 +42,7 @@ public class Worker_Controller : MonoBehaviour
         {
             Buy_Btn.SetActive(false);
             LevelUp_Btn.SetActive(true);
-            Prod_Gold.text = GameManager.Instance.ChangeValue(Info.Prod_gold.ToString());
+            Prod_Gold.text = GameManager.Instance.ChangeValue(Info.Prod_gold.ToString()) + " g/s";
 
         }
 

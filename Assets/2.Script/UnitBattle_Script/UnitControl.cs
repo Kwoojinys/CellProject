@@ -354,7 +354,8 @@ public class UnitControl : Unit_Stat
             tempDamage = 0;
         }
 
-        //Debug.Log("최종 데미지 : " + tempDamage);
+        //if(unit_id == 0 && unit_team == 0)
+        //Debug.Log("최종 데미지 : " + tempDamage + "/" + this.unit_team);
 
         return tempDamage;
     }
@@ -396,7 +397,7 @@ public class UnitControl : Unit_Stat
 
         if (this.unit_team == 1)
         {
-            GameManager.Instance.User.Have_gold += (this.level + 100);
+            GameManager.Instance.User.Have_gold += (this.level + 50000);
         }
 
         HitBox.gameObject.SetActive(false);
