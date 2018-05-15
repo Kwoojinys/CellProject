@@ -168,104 +168,27 @@ public class UnitDataManager : MonoBehaviour
             TeamUnit_ids.Add(new int[5] { -1, -1, -1, -1, -1 });
         }
 
-        // 영웅 / 병사 테스트
-        for (int i = 0; i < 1; i++)
+        // 플레이어 유닛
+        for (int i = 0; i < 5; i++)
         {
             int soldier_id = Random.Range(0, 2);
 
             Unit_Stat NewUnit = Master_UnitData[soldier_id].Clone();
 
-            ////// 기본
-            ////NewUnit.unit_type = 0;
-            ////NewUnit.soldier_id = 0;
+            Debug.Log("Cri Rate : " + NewUnit.unit_CriticalRate);
+            Debug.Log("Cri Dmg : " + NewUnit.unit_CriticalDamage);
 
-            // 종류 구분 테스트
-            /*
-            if (i.Equals(0))
-            {
-                NewUnit.unit_type = 0;
-                NewUnit.soldier_id = 0;
-                NewUnit.unit_DamageType = 0;
-                NewUnit.unit_Element = 2;
-            }
-            else if (i.Equals(1))
-            {
-                NewUnit.unit_type = 0;
-                NewUnit.soldier_id = 1;
-                NewUnit.unit_DamageType = 0;
-                NewUnit.unit_Element = 1;
-            }
-            else if (i.Equals(2))
-            {
-                NewUnit.unit_type = 0;
-                NewUnit.soldier_id = 2;
-                NewUnit.unit_DamageType = 1;
-            }
-            else if (i.Equals(3))
-            {
-                NewUnit.unit_type = 1;
-                NewUnit.soldier_id = 0;
-                NewUnit.unit_DamageType = 1;
-            }
-            else
-            {
-                NewUnit.unit_type = 1;
-                NewUnit.soldier_id = 1;
-                NewUnit.unit_DamageType = 1;
-            }
-            */
             NewUnit.unit_id = i;
-            NewUnit.unit_team = 0;
             NewUnit.level = 10;
             NewUnit.SetData(NewUnit.level, true);
             PlayerSpawnUnitList.Add(NewUnit);
+
             UIManager.Instance.AInsert_EntryUnit(NewUnit);
         }
 
-        ////for (int i = 0; i < 20; i++)
-        ////{
-        ////    UnitControl NewUnit = new UnitControl();
-
-        ////    ////// 기본
-        ////    ////NewUnit.unit_type = 0;
-        ////    ////NewUnit.soldier_id = 0;
-
-        ////    ////// 종류 구분 테스트
-        ////    ////if (i < 4)
-        ////    ////{
-        ////    ////    NewUnit.unit_type = 0;
-        ////    ////    NewUnit.soldier_id = 0;
-        ////    ////}
-        ////    ////else if(i < 8)
-        ////    ////{
-        ////    ////    NewUnit.unit_type = 0;
-        ////    ////    NewUnit.soldier_id = 1;
-        ////    ////}
-        ////    ////else if (i < 12)
-        ////    ////{
-        ////    ////    NewUnit.unit_type = 0;
-        ////    ////    NewUnit.soldier_id = 2;
-        ////    ////}
-        ////    ////else if (i < 16)
-        ////    ////{
-        ////    ////    NewUnit.unit_type = 1;
-        ////    ////    NewUnit.soldier_id = 0;
-        ////    ////}
-        ////    ////else
-        ////    ////{
-        ////    ////    NewUnit.unit_type = 1;
-        ////    ////    NewUnit.soldier_id = 1;
-        ////    ////}
-
-        ////    NewUnit.unit_id = i;
-        ////    NewUnit.level = 20;
-        ////    NewUnit.SetData(0, 0, 0.03f, 0, NewUnit.level, true);
-        ////    PlayerSpawnUnitList.Add(NewUnit);
-        ////}
-
 
         // 적 유닛 생성
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 3; i++)
         {
             Unit_Stat NewUnit = Enemy_UnitData[0].Clone();
             NewUnit.unit_team = 1;
@@ -341,8 +264,8 @@ public class UnitDataManager : MonoBehaviour
         List<GameObject> PUnits = UnitSpawnManager.Instance.PUnitObj;
         for (int i = 0; i < PUnits.Count; i++)
         {
-            if (PUnits[i].GetComponent<UnitControl>().unit_id == unit_id)
-                PUnits[i].GetComponent<UnitControl>().SetData(Unit.level, true);
+            if (PUnits[i].GetComponent<UnitScript>().unit_id == unit_id)
+                PUnits[i].GetComponent<UnitScript>().SetData(Unit.level, true);
         }
 
         UnitController This_Controller = UIManager.Instance.Unit_Controllers.Find(x => x.This_Id == unit_id);
@@ -391,7 +314,7 @@ public class UnitDataManager : MonoBehaviour
             List<GameObject> PUnits = UnitSpawnManager.Instance.PUnitObj;
             for (int j = 0; j < PUnits.Count; j++)
             {
-                PUnits[j].GetComponent<UnitControl>().SetData(Unit.level, true);
+                PUnits[j].GetComponent<UnitScript>().SetData(Unit.level, true);
             }
 
             UnitController This_Controller = UIManager.Instance.Unit_Controllers.Find(x => x.This_Id == Unit.unit_id);
@@ -416,11 +339,7 @@ public class UnitDataManager : MonoBehaviour
     {
         int Target_Team = UIManager.Instance.Target_Team;
 
-<<<<<<< .mine
-        for (int i = 0; i < TeamUnit_ids[Target_Team].Length; i++)
-=======
         for (int j = 0; j < TeamUnit_ids.Count; j++)
->>>>>>> .theirs
         {
             for (int i = 0; i < TeamUnit_ids[j].Length; i++)
             {

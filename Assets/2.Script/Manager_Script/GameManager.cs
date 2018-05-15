@@ -79,9 +79,9 @@ public class GameManager : MonoBehaviour
         //indexTemp += 1000;
         //index++;
 
-        big1 = BigInteger.Add(big1, big1);
+        //big1 = BigInteger.Add(big1, big1);
 
-        Debug.Log(big1);
+        //Debug.Log(big1);
         
 
         if (Loading_Complete) return;
@@ -144,20 +144,11 @@ public class GameManager : MonoBehaviour
                     Loading_Complete = true;
                     GameStateManager.Instance.Stage_Start();
                     Debug.Log("Game Ready!");
-                    //float temp = 340282300000000000000000000000000000000.0f;
-                    //Debug.Log(ChangeValue(temp.ToString()));
-                    //Debug.Log("Float " + ChangeValue(testF.ToString()) + " " + testF.ToString("0"));
-                    //Debug.Log("Double " + ChangeValue(testD.ToString()) + " " + testD.ToString("0"));
-                    Debug.Log("Decimal " + ChangeValue(testDC.ToString()) + " " + testDC.ToString("0"));
                     break;
                 }
         }
 
     }
-
-    float testF = float.MaxValue;
-    double testD = double.MaxValue;
-    decimal testDC = decimal.MaxValue;
 
     /*
     public string ChangeMoney(int value)

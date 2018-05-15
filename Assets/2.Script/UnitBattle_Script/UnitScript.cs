@@ -7,7 +7,7 @@ using UnityEngine.UI;
 
 
 // 각 유닛 객체 데이터
-public class UnitControl : Unit_Stat
+public class UnitScript : Unit_Stat
 {
     [HideInInspector]
     public float tempAttackSpeed;   // 공격속도 계산용
@@ -19,7 +19,7 @@ public class UnitControl : Unit_Stat
     Transform thisTrans;
     [Space(20)]
     public Transform targetTrans;
-    public UnitControl targetUnitData;
+    public UnitScript targetUnitData;
     Transform HitBox;
 
     Transform unit_AttackColl;
@@ -206,6 +206,11 @@ public class UnitControl : Unit_Stat
     {
         while (true)
         {
+            if(GameStateManager.Instance.isStageClear)
+            {
+                break;
+            }
+
             switch (unitState)
             {
                 case eUnitState.wait:
@@ -294,16 +299,22 @@ public class UnitControl : Unit_Stat
     // 투사체 목표에 도착
     public void arrowArrival()
     {
+        if (targetUnitData == null)
+        {
+            unitState = eUnitState.move;
+            return;
+        }
+
         targetUnitData.TakeDamage(DamageCalcul());
-        CancelInvoke("arrowEnd");
-        Invoke("arrowEnd", 1.0f);
+        arrowEnd();
+        //CancelInvoke("arrowEnd");
+        //Invoke("arrowEnd", 1.0f);
     }
 
-    // 투사체 제거, 다음 공격 시작
+    // 투사체 제거
     public void arrowEnd()
     {
         arrowMove.gameObject.transform.parent.gameObject.SetActive(false);
-        tempAttackSpeed = unit_attackSpeed;
     }
 
     // 데미지 계산
@@ -318,6 +329,13 @@ public class UnitControl : Unit_Stat
         float targetMagicDef = targetUnitData.unit_MagicDef;            // 마법 방어력
         int targetElement = targetUnitData.unit_Element;                // 속성
         int targetCounterElement = targetUnitData.unit_counter_element; // 약점속성
+
+
+        // 크리티컬
+        if(Random.Range(1, 100) >= unit_CriticalRate)
+        {
+            tempCri = true;
+        }
 
         // 상성 확인
         if (unit_Element.Equals(targetElement))
@@ -355,7 +373,7 @@ public class UnitControl : Unit_Stat
         }
 
         //if(unit_id == 0 && unit_team == 0)
-        //Debug.Log("최종 데미지 : " + tempDamage + "/" + this.unit_team);
+        Debug.Log("최종 데미지 : " + tempDamage + "/" + this.unit_team);
 
         return tempDamage;
     }

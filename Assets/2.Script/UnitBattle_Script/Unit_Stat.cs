@@ -88,7 +88,7 @@ public class Unit_Stat : MonoBehaviour
     // 데미지 계산
     public float damage_up;    // 상성 데미지
     public float damage_down;  // 역상성 데미지
-    public float damage_Critical;
+    public float damage_Critical;   // 크리티컬 데미지
 
     public void Init_Stat()
     {
@@ -117,7 +117,7 @@ public class Unit_Stat : MonoBehaviour
         this.unit_MagicDef = Base_Data.unit_MagicDef;
         this.unit_PhysicalDef = Base_Data.unit_PhysicalDef;
         this.unit_moveSpeed = Base_Data.unit_moveSpeed;
-        this.unit_attackSpeed = Base_Data.unit_attackSpeed;
+        this.unit_attackSpeed = 1 / Base_Data.unit_attackSpeed;
         this.base_up_gold = Base_Data.base_up_gold;
         this.unit_Element = Base_Data.unit_Element;
         this.face_sprite = Base_Data.face_sprite;
@@ -188,9 +188,11 @@ public class Unit_Stat : MonoBehaviour
 
 
         // 데미지 계산
-        damage_up = unit_Damage * 1.2f;
-        damage_down = unit_Damage * 0.8f;
-        damage_Critical = unit_Damage * 0.5f;
+        float tempPMDmg = unit_Damage * 0.2f;
+
+        damage_up = unit_Damage + tempPMDmg;
+        damage_down = unit_Damage - tempPMDmg;
+        damage_Critical = unit_Damage * unit_CriticalDamage;
     }
 
     public float Get_LevelUp_Gold(int level_tier)

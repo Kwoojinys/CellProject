@@ -5,7 +5,7 @@ using UnityEngine;
 // 유닛 공격 스크립트
 public class UnitAttackColl : MonoBehaviour
 {
-    UnitControl unitData;
+    UnitScript unitData;
 
     const string tagPlayerHitbox = "pHitbox";
     const string tagEnemyHitbox = "eHitbox";
@@ -18,7 +18,7 @@ public class UnitAttackColl : MonoBehaviour
 
     private void Awake()
     {
-        unitData = transform.parent.GetComponent<UnitControl>();
+        unitData = transform.parent.GetComponent<UnitScript>();
 
 
         if (unitData.unit_team.Equals(0))
@@ -56,7 +56,7 @@ public class UnitAttackColl : MonoBehaviour
             return;
         }
 
-        int tempType = collUnit[0].GetComponentInParent<UnitControl>().unit_type;
+        int tempType = collUnit[0].GetComponentInParent<UnitScript>().unit_type;
 
         if (tempType.Equals(2)) // HQ
         {
@@ -79,8 +79,8 @@ public class UnitAttackColl : MonoBehaviour
 
             if (collUnit.Count.Equals(1))
             {
-                unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitControl>();
-                unitData.unitState = UnitControl.eUnitState.attack;
+                unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitScript>();
+                unitData.unitState = UnitScript.eUnitState.attack;
             }
         }
     }
@@ -93,7 +93,7 @@ public class UnitAttackColl : MonoBehaviour
 
             if (!collUnit.Count.Equals(0))
             {
-                unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitControl>();
+                unitData.targetUnitData = collUnit[0].GetComponentInParent<UnitScript>();
             }
             else
             {

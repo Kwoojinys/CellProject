@@ -24,6 +24,8 @@ public class GameStateManager : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
+    public bool isStageClear;
+
 
     public enum eGameState
     {
@@ -46,6 +48,8 @@ public class GameStateManager : MonoBehaviour
         //GameManager.Instance.Current_Stage = PlayerPrefs.GetInt("CurrentStage", 1);
         //UIManager.Instance.Stage_Text.text = GameManager.Instance.Current_Stage + " Stage";
 
+        isStageClear = false;
+
         UnitSpawnManager.Instance.Start_Summon();
     }
 
@@ -60,11 +64,16 @@ public class GameStateManager : MonoBehaviour
     /// <param name="Victory"></param>
     public void Game_Clear(bool Victory)
     {
-        StartCoroutine(GameClearCorou(Victory));
+        if(!isStageClear)
+        {
+            StartCoroutine(GameClearCorou(Victory));
+        }
     }
 
     IEnumerator GameClearCorou(bool Victory)
     {
+        isStageClear = true;
+
         yield return new WaitForSeconds(1.0f);
 
         UIManager.Instance.Block_UI.GetComponent<Animation>().Play();

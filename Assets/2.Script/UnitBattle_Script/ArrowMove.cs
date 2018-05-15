@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ArrowMove : MonoBehaviour
 {
-    UnitControl unitCont;
+    UnitScript unitCont;
 
     public Transform lookatTrans;
 
@@ -21,7 +21,7 @@ public class ArrowMove : MonoBehaviour
 
         //StartCoroutine("ArrowMoveCorou");
 
-        unitCont = transform.parent.parent.GetComponent<UnitControl>();
+        unitCont = transform.parent.parent.GetComponent<UnitScript>();
 
         //ShotArrow(targetTrans);
     }
