@@ -95,7 +95,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject Worker = Instantiate(WorkerObj, Workers) as GameObject;
             Worker.transform.localPosition = new Vector2(0, 0);
-            Workers.GetComponent<RectTransform>().sizeDelta = new Vector2(704, i * 150);
+            Workers.GetComponent<RectTransform>().sizeDelta = new Vector2(704, (i+1) * 130);
             Worker_Objs.Add(Worker);
 
             Worker.GetComponent<Worker_Controller>().Set_Info(Worker_List[i]);
