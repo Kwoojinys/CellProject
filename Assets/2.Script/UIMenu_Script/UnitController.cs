@@ -29,6 +29,7 @@ public class UnitController : MonoBehaviour
 
     public GameObject TeamBtn;
     public GameObject ManagementBtn;
+    public Image Elemental;
 
     float Req_Gold = 0;
     float UpGold = 0;
@@ -79,13 +80,32 @@ public class UnitController : MonoBehaviour
             Atk_Text.color = Color.blue;    // 마법 데미지, 파란색
         }
 
-
-
-
         Req_Gold = Info.unit_req_gold;
         UpGold = Info.upgolds[0];
         Up10Gold = Info.upgolds[1];
         Up100Gold = Info.upgolds[2];
+
+        switch (Info.unit_Element)
+        {
+            case 1:
+                {
+                    Elemental 
+                    break;
+                }
+            case 2:
+                {
+                    break;
+                }
+            case 3:
+                {
+                    break;
+                }
+            default:
+                {
+                    break;
+                }
+        }
+
         Refresh_Avaliable();
     }
 
@@ -206,6 +226,35 @@ public class UnitController : MonoBehaviour
     {
         TeamBtn.SetActive(false);
         ManagementBtn.SetActive(true);
+    }
+
+    public void Switch_By_Team(int team)
+    {
+        Unit_Stat Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
+
+        if(Info.battle_team != team)
+        {
+            this.gameObject.SetActive(false);
+        } else
+        {
+            this.gameObject.SetActive(true);
+        }
+    }
+
+    public void Switch_By_Elemental(int Elemental)
+    {
+        Unit_Stat Info = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == This_Id);
+
+        if(Elemental == 0)
+        {
+            this.gameObject.SetActive(true);
+            return;
+        }
+
+        if (Info.unit_Element != Elemental)
+            this.gameObject.SetActive(false);
+        else
+            this.gameObject.SetActive(true);
     }
 
 }

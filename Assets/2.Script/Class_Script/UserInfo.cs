@@ -22,7 +22,7 @@ public class UserInfo
         {
             have_gold = value;
             UIManager.Instance.Refresh_Gold(have_gold);
-
         }
     }
+
 }

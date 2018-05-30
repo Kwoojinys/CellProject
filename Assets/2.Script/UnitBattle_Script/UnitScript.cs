@@ -373,7 +373,7 @@ public class UnitScript : Unit_Stat
         }
 
         //if(unit_id == 0 && unit_team == 0)
-        Debug.Log("최종 데미지 : " + tempDamage + "/" + this.unit_team);
+        //Debug.Log("최종 데미지 : " + tempDamage + "/" + this.unit_team);
 
         return tempDamage;
     }

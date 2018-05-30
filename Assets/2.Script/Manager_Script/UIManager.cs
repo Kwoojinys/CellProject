@@ -38,6 +38,8 @@ public class UIManager : MonoBehaviour
     public Transform Units;
     public ScrollRect WorkersView;
     public ScrollRect UnitsView;
+    public Transform MyUnits;
+
     public List<GameObject> Worker_Objs;
     public List<GameObject> Unit_Objs;
     public List<Worker_Controller> Worker_Controllers;
@@ -59,6 +61,15 @@ public class UIManager : MonoBehaviour
 
     public int Target_Team;
     public int Target_EntryID;
+
+    public Image Ud_Sprite;
+    public Text[] Ud_Texts;
+
+    public Transform Entry_TeamBtns;
+    public Transform Battle_TeamBtn;
+
+    private int Target_Unit_Id = -1;
+    private int Selected_Elemental = 0;
 
     public void Refresh_Gold(float gold)
     {
@@ -95,7 +106,7 @@ public class UIManager : MonoBehaviour
         {
             GameObject Worker = Instantiate(WorkerObj, Workers) as GameObject;
             Worker.transform.localPosition = new Vector2(0, 0);
-            Workers.GetComponent<RectTransform>().sizeDelta = new Vector2(704, (i+1) * 130);
+            Workers.GetComponent<RectTransform>().sizeDelta = new Vector2(704, (i + 1) * 130);
             Worker_Objs.Add(Worker);
 
             Worker.GetComponent<Worker_Controller>().Set_Info(Worker_List[i]);
@@ -109,11 +120,12 @@ public class UIManager : MonoBehaviour
         List<Unit_Stat> Unit_List = UnitDataManager.Instance.PlayerSpawnUnitList;
         Unit_Controllers = new List<UnitController>();
         GameObject UnitObj = Resources.Load("Unit_Child") as GameObject;
+        Units.GetComponent<RectTransform>().sizeDelta = new Vector2(704, 650);
+
         for (int i = 0; i < Unit_List.Count; i++)
         {
             GameObject Unit = Instantiate(UnitObj, Units) as GameObject;
             Unit.transform.localPosition = new Vector2(0, 0);
-            Units.GetComponent<RectTransform>().sizeDelta = new Vector2(704, (i+1) * 130);
             Unit_Objs.Add(Unit);
 
             Unit.GetComponent<UnitController>().Set_Info(Unit_List[i]);
@@ -125,6 +137,8 @@ public class UIManager : MonoBehaviour
         UnitsView.verticalNormalizedPosition = 1f; // 스크롤뷰 위치 초기화
 
         Open_Menu((int)Menu_Btns.Soldier);
+
+        Change_BattleTeam(PlayerPrefs.GetInt("BattleTeam", 0));
     }
 
     public void Open_Menu(int id)
@@ -170,15 +184,42 @@ public class UIManager : MonoBehaviour
 
     public void Switch_EntryMenu()
     {
+        if (Entry_ChangeMode)
+        {
+            Target_Unit_Id = -1;
+
+            Entry_ChangeMode = false;
+
+            Ud_Sprite.transform.parent.gameObject.SetActive(false);
+            Entry_TeamBtns.gameObject.SetActive(true);
+
+            return;
+        }
+
         EntryMenu.gameObject.SetActive(!EntryMenu.gameObject.activeSelf);
 
         Change_Team(0);
 
-        for (int i = 0; i < Unit_Objs.Count; i++)
+        if (EntryMenu.gameObject.activeSelf)
         {
-            Unit_Objs[i].GetComponent<UnitController>().Off_TeamMode();
+                for (int i = 0; i < Unit_Objs.Count; i++)
+                {
+                    Unit_Objs[i].GetComponent<UnitController>().Off_TeamMode();
+                    Unit_Objs[i].transform.parent = MyUnits;
+                    Unit_Objs[i].gameObject.SetActive(true);
+                    Unit_Objs[i].GetComponent<UnitController>().Change_TeamMode();
+                }
+        } else
+        {
+            for (int i = 0; i < Unit_Objs.Count; i++)
+            {
+                Unit_Objs[i].GetComponent<UnitController>().Off_TeamMode();
+                Unit_Objs[i].transform.parent = Units;
+                Unit_Objs[i].GetComponent<UnitController>().Switch_By_Team(UnitSpawnManager.Instance.Selected_Team_Number);
+            }
         }
 
+        MyUnits.GetComponent<RectTransform>().sizeDelta = new Vector2(704, Unit_Objs.Count * 130);
     }
 
     public void Set_AllLvupTexts()
@@ -215,35 +256,46 @@ public class UIManager : MonoBehaviour
 
         Target_EntryID = -1;
 
+        Refresh_Team_Sprite();
 
-        for (int j = 0; j < UnitDataManager.Instance.TeamUnit_ids[team_number].Length; j++)
+        for (int i = 0; i < Unit_Objs.Count; i++)
+            Unit_Objs[i].GetComponent<UnitController>().Change_TeamMode();
+
+        for (int i = 0; i < Entry_TeamBtns.childCount; i++)
+            if (i == team_number)
+                Entry_TeamBtns.GetChild(i).GetComponent<Image>().color = Color.cyan;
+            else
+                Entry_TeamBtns.GetChild(i).GetComponent<Image>().color = Color.gray;
+    }
+
+    public void Refresh_Team_Sprite()
+    {
+        for (int j = 0; j < UnitDataManager.Instance.TeamUnit_ids[Target_Team].Length; j++)
         {
-            if (UnitDataManager.Instance.TeamUnit_ids[team_number][j] == -1)
+            if (UnitDataManager.Instance.TeamUnit_ids[Target_Team][j] == -1)
             {
+                EntryUnits[j].GetChild(0).GetComponent<Image>().sprite = null;
                 continue;
             }
 
-            Unit_Stat Target = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == UnitDataManager.Instance.TeamUnit_ids[team_number][j]);
+            Unit_Stat Target = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == UnitDataManager.Instance.TeamUnit_ids[Target_Team][j]);
             EntryUnits[j].GetChild(0).GetComponent<Image>().sprite = DataManager.Instance.GetSprite(Target.face_sprite);
         }
     }
 
     public void OnClick_EntryUnit(int id)
     {
-        Entry_ChangeMode = true;
-
-        for (int i = 0; i < Unit_Objs.Count; i++)
-        {
-            Unit_Objs[i].GetComponent<UnitController>().Change_TeamMode();
-        }
+        if (Target_Unit_Id == -1) return;
 
         Target_EntryID = id;
 
-        Debug.Log(TeamUnits[id]);
-    }
+        Unit_Stat Target = UnitDataManager.Instance.PlayerSpawnUnitList.Find(x => x.unit_id == Target_Unit_Id);
+        if (Target.battle_team != -1)
+        {
+            UnitDataManager.Instance.Team_Entry_Out(Target.unit_id, Target.battle_team);
+            Refresh_Team_Sprite();
+        }
 
-    public void Change_EntryUnit(Unit_Stat Target)
-    {
         Target.battle_team = Target_Team;
 
         UnitDataManager.Instance.TeamUnit_ids[Target_Team][Target_EntryID] = Target.unit_id;
@@ -253,8 +305,32 @@ public class UIManager : MonoBehaviour
 
         for (int i = 0; i < Unit_Objs.Count; i++)
         {
-            Unit_Objs[i].GetComponent<UnitController>().Off_TeamMode();
+            Unit_Objs[i].GetComponent<UnitController>().Change_TeamMode();
         }
+
+        Refresh_Team_Sprite();
+        Target_Unit_Id = -1;
+        Ud_Sprite.transform.parent.gameObject.SetActive(false);
+    }
+
+    /// <summary>
+    /// 교체화면에서 유닛 선택시 발동
+    /// </summary>
+    /// <param name="Target"></param>
+    public void Change_EntryUnit(Unit_Stat Target)
+    {
+        Entry_ChangeMode = true;
+
+        Target_Unit_Id = Target.unit_id;
+
+        Ud_Sprite.transform.parent.gameObject.SetActive(true);
+
+        Ud_Sprite.sprite = DataManager.Instance.GetSprite(Target.face_sprite);
+        Ud_Texts[0].text = Target.Name;
+        Ud_Texts[1].text = Target.Tier_UI();
+        Ud_Texts[2].text = Target.Type_UI();
+
+        Entry_TeamBtns.gameObject.SetActive(false);
     }
 
 
@@ -276,7 +352,39 @@ public class UIManager : MonoBehaviour
 
     public void Change_BattleTeam(int teamnumber)
     {
+        if (UnitDataManager.Instance.Team_Entry_Count(teamnumber) == 0)
+        {
+            // 팀 유닛을 배치해주세요
+            return;
+        }
+
         UnitSpawnManager.Instance.Selected_Team_Number = teamnumber;
+        PlayerPrefs.SetInt("BattleTeam", teamnumber);
         Debug.Log("Team Change : " + UnitSpawnManager.Instance.Selected_Team_Number);
+
+        for(int i = 0; i < Battle_TeamBtn.childCount;i++)
+            if(i == teamnumber)
+                Battle_TeamBtn.GetChild(i).GetComponent<Image>().color = Color.cyan;
+            else
+                Battle_TeamBtn.GetChild(i).GetComponent<Image>().color = Color.gray;
+
+        for (int i = 0; i < Unit_Objs.Count; i++)
+            Unit_Objs[i].GetComponent<UnitController>().Switch_By_Team(teamnumber);
+    }
+
+    public void Sort_By_Elemental(int Elemental)
+    {
+        if(Selected_Elemental == Elemental)
+        {
+            for (int i = 0; i < Unit_Objs.Count; i++)
+                Unit_Objs[i].GetComponent<UnitController>().Switch_By_Elemental(0);
+
+            return;
+        }
+
+        Selected_Elemental = Elemental;
+
+        for (int i = 0; i < Unit_Objs.Count; i++)
+            Unit_Objs[i].GetComponent<UnitController>().Switch_By_Elemental(Elemental);
     }
 }

@@ -37,6 +37,7 @@ public class Unit_Stat : MonoBehaviour
         Clones.unit_Element = this.unit_Element;
         Clones.tier = this.tier;
         Clones.face_sprite = this.face_sprite;
+        Clones.unit_class = this.unit_class;
 
         return Clones;
     }
@@ -46,6 +47,18 @@ public class Unit_Stat : MonoBehaviour
     public int unit_id = -1; // 유닛 획득 순 별 아이디
     public int unit_team;   // 아군 / 적군 구분       0 : 플레이어  1 : 적
     public int unit_type;   // 임시로 근거리, 원거리 구분에 사용중
+    /// <summary>
+    /// 0: 탱커/근거리
+    /// 1: 딜러/근거리
+    /// 2: 딜러/원거리/단발
+    /// 3: 딜러/원거리/광역
+    /// 4: 지원/근거리/버프
+    /// 5: 지원/근거리/디버프
+    /// 6: 지원/원거리/버프
+    /// 7: 지원/원거리/디버프
+    /// </summary>
+    public int unit_class; // 유닛의 직업군 분류 
+
 
     public string face_sprite; // UI 유닛 스프라이트 파일 이름
 
@@ -83,7 +96,7 @@ public class Unit_Stat : MonoBehaviour
     public float[] upgolds;
     public int level = 1;
 
-    public int battle_team = 0; // 전투 배치 팀 번호 (1,2,3)
+    public int battle_team = -1; // 전투 배치 팀 번호 (0,1,2)
 
     // 데미지 계산
     public float damage_up;    // 상성 데미지
@@ -237,5 +250,54 @@ public class Unit_Stat : MonoBehaviour
         }
 
         return Request_Gold;
+    }
+    /// <summary>
+    /// UI에서 사용할 용도로 티어를 가져옴
+    /// </summary>
+    /// <returns></returns>
+    public string Tier_UI()
+    {
+        switch (tier)
+        {
+            case 0:
+                return "I 단계";
+            case 1:
+                return "II 단계";
+            case 2:
+                return "III 단계";
+            case 3:
+                return "IV 단계";
+            default:
+                return "I 단계";
+        }
+    }
+
+    /// <summary>
+    /// UI에서 사용할 용도로 타입을 가져옴
+    /// </summary>
+    /// <returns></returns>
+    public string Type_UI()
+    {
+        switch (unit_class)
+        {
+            case 0:
+                return "근거리, 탱커";
+            case 1:
+                return "근거리, 딜러";
+            case 2:
+                return "원거리, 딜러(단발)";
+            case 3:
+                return "원거리, 딜러(광역)";
+            case 4:
+                return "근거리, 지원(버프)";
+            case 5:
+                return "근거리, 지원(디버프)";
+            case 6:
+                return "원거리, 지원(버프)";
+            case 7:
+                return "원거리, 지원(디버프)";
+            default:
+                return "근거리, 탱커";
+        }
     }
 }

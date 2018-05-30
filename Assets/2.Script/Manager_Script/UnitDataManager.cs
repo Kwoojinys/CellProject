@@ -130,6 +130,7 @@ public class UnitDataManager : MonoBehaviour
             Unit.base_up_gold = Data[i]["base_up_gold"].AsInt;
             Unit.tier = Data[i]["tier"].AsInt;
             Unit.face_sprite = Data[i]["face_sprite"];
+            Unit.unit_class = Data[i]["unit_class"];
             Unit.unit_team = 0;
 
             Master_UnitData.Add(Unit);
@@ -168,14 +169,11 @@ public class UnitDataManager : MonoBehaviour
             TeamUnit_ids.Add(new int[5] { -1, -1, -1, -1, -1 });
         }
 
-
+        for (int i = 0; i < 16; i++)
         {
-            int soldier_id = Random.Range(0, 2);
+            int soldier_id = Random.Range(0, 6);
 
             Unit_Stat NewUnit = Master_UnitData[soldier_id].Clone();
-
-            Debug.Log("Cri Rate : " + NewUnit.unit_CriticalRate);
-            Debug.Log("Cri Dmg : " + NewUnit.unit_CriticalDamage);
 
             NewUnit.unit_id = i;
             NewUnit.level = 10;
@@ -184,7 +182,6 @@ public class UnitDataManager : MonoBehaviour
 
             UIManager.Instance.AInsert_EntryUnit(NewUnit);
         }
-
 
         // 적 유닛 생성
         for (int i = 0; i < 3; i++)
@@ -338,16 +335,45 @@ public class UnitDataManager : MonoBehaviour
     {
         int Target_Team = UIManager.Instance.Target_Team;
 
-        for (int j = 0; j < TeamUnit_ids.Count; j++)
-        {
-            for (int i = 0; i < TeamUnit_ids[j].Length; i++)
+            for (int i = 0; i < TeamUnit_ids[Target_Team].Length; i++)
             {
-                if (TeamUnit_ids[j][i] == id)
+                if (TeamUnit_ids[Target_Team][i] == id)
                     return false;
             }
-        }
 
         return true;
+    }
+
+    /// <summary>
+    /// 유닛이 이미 편성된 상태면 편성되있던 팀에서 제외시킴
+    /// </summary>
+    public void Team_Entry_Out(int Unit_Id, int Unit_Team)
+    {
+        for (int i = 0; i < TeamUnit_ids[Unit_Team].Length; i++)
+        {
+            if (TeamUnit_ids[Unit_Team][i] == Unit_Id)
+                TeamUnit_ids[Unit_Team][i] = -1;
+        }
+    }
+
+    /// <summary>
+    /// 팀에 배치된 유닛 수를 계산함
+    /// </summary>
+    /// <param name="team"></param>
+    /// <returns></returns>
+    public int Team_Entry_Count(int team)
+    {
+        int count = 0;
+
+        int teamnumber = team--;
+
+        for (int i = 0; i < TeamUnit_ids[teamnumber].Length; i++)
+        {
+            if (TeamUnit_ids[teamnumber][i] >= 0)
+                count++;
+        }
+
+        return count;
     }
 }
 
